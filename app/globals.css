@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fdfcfa;
+  --foreground: #2d2a26;
+  --accent: #b08968;
+  --muted: #6b6862;
+
+  --font-active: var(--font-gowun-batang), "Noto Serif KR", serif;
+}
+
+html {
+  background: linear-gradient(180deg, #f4ede4 0%, #efe4d6 100%);
+}
+
+body {
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-active);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-serif,
+.font-sans {
+  font-family: var(--font-active);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}

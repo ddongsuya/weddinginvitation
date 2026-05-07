@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: wedding-invitation
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /home
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_NCP_CLIENT_ID
+        sync: false
+      - key: NEXT_PUBLIC_KAKAO_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
