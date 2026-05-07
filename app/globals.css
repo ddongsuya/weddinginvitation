@@ -36,3 +36,10 @@ body {
     text-wrap: pretty;
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  body,
+  body * {
+    cursor: none !important;
+  }
+}

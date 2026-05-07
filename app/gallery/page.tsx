@@ -61,17 +61,24 @@ export default function GalleryPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.04 }}
                     onClick={() => setActive(absoluteIndex)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
                     className="group relative aspect-[3/4] overflow-hidden bg-stone-100"
                     aria-label={`${absoluteIndex + 1}번째 사진 보기`}
                   >
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="(max-width: 640px) 33vw, 25vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading={i < 8 ? "eager" : "lazy"}
-                    />
+                    <motion.div
+                      layoutId={`gallery-photo-${absoluteIndex}`}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        sizes="(max-width: 640px) 33vw, 25vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading={i < 8 ? "eager" : "lazy"}
+                      />
+                    </motion.div>
                   </motion.button>
                 );
               })}
@@ -127,26 +134,33 @@ export default function GalleryPage() {
       <AnimatePresence>
         {active !== null && (
           <motion.div
+            key="lightbox-bg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
             onClick={() => setActive(null)}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
             role="dialog"
             aria-label="사진 크게 보기"
           >
-            <button
-              onClick={() => setActive(null)}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActive(null);
+              }}
               className="absolute right-4 top-4 z-10 rounded-full bg-white/10 px-3 py-1 text-xs text-white sm:right-6 sm:top-6"
               aria-label="닫기"
             >
               닫기
-            </button>
+            </motion.button>
             <motion.div
-              key={active}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              layoutId={`gallery-photo-${active}`}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="relative h-[85vh] w-full max-w-4xl"
             >
               <Image

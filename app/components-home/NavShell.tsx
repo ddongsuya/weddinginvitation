@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { MenuOverlay } from "./MenuOverlay";
+import { ScrollProgress } from "./ScrollProgress";
+import { CustomCursor } from "./CustomCursor";
 import { weddingData } from "@/lib/data";
 
 export function NavShell({ children }: { children: React.ReactNode }) {
@@ -62,6 +64,8 @@ export function NavShell({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <ScrollProgress />
+      <CustomCursor />
     </>
   );
 }
