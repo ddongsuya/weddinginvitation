@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SubpageHero } from "../../components-home/SubpageHero";
-import { SubpageNav } from "../../components-home/SubpageNav";
+import { SubpageHero } from "../components-home/SubpageHero";
+import { SubpageNav } from "../components-home/SubpageNav";
 import { weddingData } from "@/lib/data";
 
 type Side = "groom" | "bride";
@@ -73,7 +73,7 @@ export default function WishesPage() {
         </motion.div>
       </section>
 
-      <SubpageNav currentHref="/home/wishes" />
+      <SubpageNav currentHref="/wishes" />
     </main>
   );
 }

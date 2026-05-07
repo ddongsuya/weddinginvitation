@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SubpageHero } from "../../components-home/SubpageHero";
-import { SubpageNav } from "../../components-home/SubpageNav";
+import { SubpageHero } from "../components-home/SubpageHero";
+import { SubpageNav } from "../components-home/SubpageNav";
 import { weddingData } from "@/lib/data";
 
 export default function InvitationPage() {
@@ -67,7 +67,7 @@ export default function InvitationPage() {
         </div>
       </section>
 
-      <SubpageNav currentHref="/home/invitation" />
+      <SubpageNav currentHref="/invitation" />
     </main>
   );
 }

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SubpageHero } from "../../components-home/SubpageHero";
-import { SubpageNav } from "../../components-home/SubpageNav";
-import { NaverMap } from "../../components-home/NaverMap";
+import { SubpageHero } from "../components-home/SubpageHero";
+import { SubpageNav } from "../components-home/SubpageNav";
+import { NaverMap } from "../components-home/NaverMap";
 import { weddingData } from "@/lib/data";
 
 export default function LocationPage() {
@@ -170,7 +170,7 @@ export default function LocationPage() {
         </motion.div>
       </section>
 
-      <SubpageNav currentHref="/home/location" />
+      <SubpageNav currentHref="/location" />
     </main>
   );
 }

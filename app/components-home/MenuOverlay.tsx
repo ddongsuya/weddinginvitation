@@ -7,11 +7,11 @@ import { weddingData } from "@/lib/data";
 import { loadKakaoSdk, shareInvitation } from "@/lib/kakao";
 
 export const MENU_ITEMS = [
-  { num: "01", label: "초대의 글", labelEn: "Invitation", href: "/home/invitation" },
-  { num: "02", label: "결혼식 안내", labelEn: "The Day", href: "/home/wedding-day" },
-  { num: "03", label: "오시는 길", labelEn: "Location", href: "/home/location" },
-  { num: "04", label: "갤러리", labelEn: "Gallery", href: "/home/gallery" },
-  { num: "05", label: "마음 전하실 곳", labelEn: "Wishes", href: "/home/wishes" },
+  { num: "01", label: "초대의 글", labelEn: "Invitation", href: "/invitation" },
+  { num: "02", label: "결혼식 안내", labelEn: "The Day", href: "/wedding-day" },
+  { num: "03", label: "오시는 길", labelEn: "Location", href: "/location" },
+  { num: "04", label: "갤러리", labelEn: "Gallery", href: "/gallery" },
+  { num: "05", label: "마음 전하실 곳", labelEn: "Wishes", href: "/wishes" },
 ] as const;
 
 const SHARE_ITEM = {
@@ -52,7 +52,7 @@ export function MenuOverlay({
 
   const goHome = () => {
     onClose();
-    setTimeout(() => router.push("/home"), 350);
+    setTimeout(() => router.push("/"), 350);
   };
 
   return (

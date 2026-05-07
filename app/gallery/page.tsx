@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { SubpageHero } from "../../components-home/SubpageHero";
-import { SubpageNav } from "../../components-home/SubpageNav";
+import { SubpageHero } from "../components-home/SubpageHero";
+import { SubpageNav } from "../components-home/SubpageNav";
 import { weddingData } from "@/lib/data";
 
 const PAGE_SIZE = 12;
@@ -162,7 +162,7 @@ export default function GalleryPage() {
         )}
       </AnimatePresence>
 
-      <SubpageNav currentHref="/home/gallery" />
+      <SubpageNav currentHref="/gallery" />
     </main>
   );
 }

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { SubpageHero } from "../../components-home/SubpageHero";
-import { SubpageNav } from "../../components-home/SubpageNav";
+import { SubpageHero } from "../components-home/SubpageHero";
+import { SubpageNav } from "../components-home/SubpageNav";
 import { weddingData } from "@/lib/data";
 
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
@@ -198,7 +198,7 @@ export default function WeddingDayPage() {
         </motion.div>
       </section>
 
-      <SubpageNav currentHref="/home/wedding-day" />
+      <SubpageNav currentHref="/wedding-day" />
     </main>
   );
 }

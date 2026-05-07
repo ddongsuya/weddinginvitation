@@ -24,7 +24,7 @@ export function NavShell({ children }: { children: React.ReactNode }) {
             className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between px-6 py-6 sm:px-10 sm:py-8"
           >
             <Link
-              href="/home"
+              href="/"
               className="pointer-events-auto font-serif text-sm tracking-wide text-white transition-opacity hover:opacity-70 sm:text-base"
               style={{ mixBlendMode: "difference" }}
             >

@@ -66,7 +66,7 @@ export async function shareInvitation(): Promise<void> {
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL ||
       (typeof window !== "undefined" ? window.location.origin : "");
-    const targetUrl = `${siteUrl}/home`;
+    const targetUrl = `${siteUrl}/`;
     const imageUrl = `${siteUrl}${weddingData.photos.main}`;
 
     kakao.Share.sendDefault({

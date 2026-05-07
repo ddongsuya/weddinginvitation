@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Gowun_Batang } from "next/font/google";
+import { NavShell } from "./components-home/NavShell";
 import "./globals.css";
 
 const gowunBatang = Gowun_Batang({
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     title: "임정모 ♥ 최화형 결혼합니다",
     description: "2026년 8월 29일 토요일 낮 12시 30분",
     type: "website",
-    url: "/home",
+    url: "/",
     images: [
       {
         url: "/photos/main.png",
@@ -42,7 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={gowunBatang.variable}>
-      <body className="antialiased">{children}</body>
+      <body className="bg-background text-foreground antialiased">
+        <NavShell>{children}</NavShell>
+      </body>
     </html>
   );
 }
