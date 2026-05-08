@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MenuOverlay } from "./MenuOverlay";
 import { ScrollProgress } from "./ScrollProgress";
 import { CustomCursor } from "./CustomCursor";
+import { BackgroundMusic } from "./BackgroundMusic";
 import { weddingData } from "@/lib/data";
 
 export function NavShell({ children }: { children: React.ReactNode }) {
@@ -66,6 +67,7 @@ export function NavShell({ children }: { children: React.ReactNode }) {
       <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
       <ScrollProgress />
       <CustomCursor />
+      <BackgroundMusic />
     </>
   );
 }
