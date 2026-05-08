@@ -65,14 +65,19 @@ function OsmFrame({
 }) {
   const bbox = `${lng - 0.0018},${lat - 0.0012},${lng + 0.0018},${lat + 0.0012}`;
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+  // OSM iframe shows an attribution bar at top + bottom. Crop both away
+  // by negative-margin and hidden overflow on the wrapper.
   return (
-    <iframe
-      src={src}
-      title={markerLabel ?? "지도"}
-      className={className}
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-    />
+    <div className={`${className} relative overflow-hidden`}>
+      <iframe
+        src={src}
+        title={markerLabel ?? "지도"}
+        className="absolute inset-x-0 -top-[40px] block w-full"
+        style={{ height: "calc(100% + 80px)" }}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+    </div>
   );
 }
 
