@@ -24,9 +24,26 @@ interface NaverMaps {
     position: unknown;
     map: unknown;
     title?: string;
+    icon?: {
+      content?: string;
+      url?: string;
+      size?: { width: number; height: number };
+      anchor?: { x: number; y: number };
+    };
   }) => unknown;
   LatLng: new (lat: number, lng: number) => unknown;
 }
+
+// Inline SVG marker — bypasses ad-blockers that match marker-default.png
+const MARKER_SVG = `
+  <div style="position:relative;width:44px;height:54px;transform:translate(-22px,-54px);filter:drop-shadow(0 4px 8px rgba(0,0,0,0.25));">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 54" width="44" height="54">
+      <path d="M22 0C9.85 0 0 9.85 0 22c0 16.5 22 32 22 32s22-15.5 22-32C44 9.85 34.15 0 22 0z" fill="#b08968"/>
+      <circle cx="22" cy="22" r="9" fill="#fff"/>
+      <circle cx="22" cy="22" r="4.5" fill="#b08968"/>
+    </svg>
+  </div>
+`;
 
 declare global {
   interface Window {
@@ -91,6 +108,9 @@ export function NaverMap({
           position: new naverMaps.LatLng(lat, lng),
           map,
           title: markerLabel,
+          icon: {
+            content: MARKER_SVG,
+          },
         });
       } catch {
         setAuthFailed(true);
