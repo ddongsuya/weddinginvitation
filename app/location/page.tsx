@@ -164,7 +164,7 @@ export default function LocationPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto grid max-w-3xl gap-10 sm:grid-cols-3 sm:gap-8"
         >
-          <Detail label="지하철" body={venue.transit} />
+          <Detail label="교통편" body={venue.transit} />
           <Detail label="주차" body={venue.parking} />
           <Detail label="안내" body={venue.addressDetail} />
         </motion.div>
