@@ -11,7 +11,7 @@ export default function InvitationPage() {
       <SubpageHero
         num="01"
         label="초대의 글"
-        photo={weddingData.gallery[2].src}
+        photo={weddingData.menuHeroes.invitation}
       />
 
       <section className="px-6 py-28 sm:px-10 sm:py-40">

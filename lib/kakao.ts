@@ -76,7 +76,7 @@ export async function shareInvitation(): Promise<void> {
     const kakao = await loadKakaoSdk();
     const siteUrl = resolveSiteUrl();
     const targetUrl = `${siteUrl}/`;
-    const imageUrl = `${siteUrl}${weddingData.photos.main}`;
+    const imageUrl = `${siteUrl}${weddingData.slides[0].src}`;
 
     kakao.Share.sendDefault({
       objectType: "feed",

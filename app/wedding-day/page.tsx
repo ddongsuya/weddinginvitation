@@ -47,7 +47,7 @@ export default function WeddingDayPage() {
       <SubpageHero
         num="02"
         label="결혼식 안내"
-        photo={weddingData.gallery[8].src}
+        photo={weddingData.menuHeroes.weddingDay}
       />
 
       <section className="px-6 py-28 sm:px-10 sm:py-36">

@@ -15,7 +15,7 @@ const SLIDE_MS = 3500;
 
 const SLIDES: Slide[] = [
   {
-    src: weddingData.photos.main,
+    src: weddingData.slides[0].src,
     render: (key) => (
       <SplitText
         animationKey={key}
@@ -29,7 +29,7 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    src: weddingData.gallery[0].src,
+    src: weddingData.slides[1].src,
     render: (key) => (
       <div className="font-serif font-light leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <SplitText
@@ -67,7 +67,7 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    src: weddingData.gallery[6].src,
+    src: weddingData.slides[2].src,
     render: (key) => (
       <div className="font-serif font-light leading-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <SplitText

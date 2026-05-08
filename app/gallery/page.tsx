@@ -7,7 +7,7 @@ import { SubpageHero } from "../components-home/SubpageHero";
 import { SubpageNav } from "../components-home/SubpageNav";
 import { weddingData } from "@/lib/data";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 9;
 
 export default function GalleryPage() {
   const [active, setActive] = useState<number | null>(null);
@@ -23,7 +23,7 @@ export default function GalleryPage() {
       <SubpageHero
         num="04"
         label="갤러리"
-        photo={weddingData.gallery[24].src}
+        photo={weddingData.menuHeroes.gallery}
       />
 
       <section className="px-6 py-20 sm:px-10 sm:py-28">
@@ -50,7 +50,7 @@ export default function GalleryPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="mt-12 grid grid-cols-3 gap-2 sm:mt-16 sm:grid-cols-4 sm:gap-4 lg:grid-cols-4"
+              className="mt-12 grid grid-cols-3 gap-2 sm:mt-16 sm:gap-4"
             >
               {visible.map((photo, i) => {
                 const absoluteIndex = start + i;
@@ -74,7 +74,7 @@ export default function GalleryPage() {
                         src={photo.src}
                         alt={photo.alt}
                         fill
-                        sizes="(max-width: 640px) 33vw, 25vw"
+                        sizes="(max-width: 640px) 33vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                         loading={i < 8 ? "eager" : "lazy"}
                       />

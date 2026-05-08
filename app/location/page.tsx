@@ -27,7 +27,7 @@ export default function LocationPage() {
       <SubpageHero
         num="03"
         label="오시는 길"
-        photo={weddingData.gallery[16].src}
+        photo={weddingData.menuHeroes.location}
       />
 
       <section className="px-6 py-28 sm:px-10 sm:py-36">

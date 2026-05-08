@@ -22,7 +22,7 @@ export default function WishesPage() {
       <SubpageHero
         num="05"
         label="마음 전하실 곳"
-        photo={weddingData.gallery[32].src}
+        photo={weddingData.menuHeroes.wishes}
       />
 
       <section className="px-6 py-28 sm:px-10 sm:py-36">

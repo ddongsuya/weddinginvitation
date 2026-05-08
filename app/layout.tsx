@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/photos/main.png",
+        url: "/photos/main01.jpg",
         width: 1080,
         height: 1920,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",

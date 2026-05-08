@@ -1,40 +1,6 @@
-const galleryFiles = [
-  "01.png",
-  "02.png",
-  "03.png",
-  "04.png",
-  "05.png",
-  "06.png",
-  "07.png",
-  "08.png",
-  "09.png",
-  "10.png",
-  "11.png",
-  "12.png",
-  "13.png",
-  "14.png",
-  "15.png",
-  "16.png",
-  "17.png",
-  "18.png",
-  "19.png",
-  "20.png",
-  "21.png",
-  "22.jpg",
-  "23.png",
-  "24.png",
-  "25.png",
-  "26.png",
-  "27.png",
-  "28.png",
-  "29.png",
-  "30.png",
-  "31.png",
-  "32.JPG",
-  "33.png",
-  "34.jpg",
-  "35.png",
-];
+// 갤러리 사진 개수 — 늘리거나 줄이고 싶으면 이 숫자만 바꾸세요.
+// 파일명 규칙: 01.jpg, 02.jpg, ... 두 자리 숫자 + .jpg 통일.
+const GALLERY_COUNT = 35;
 
 export const weddingData = {
   groom: {
@@ -51,10 +17,19 @@ export const weddingData = {
     parents: { father: "최승현", mother: "기길란" },
     intro: "따뜻한 가정을 만들어가겠습니다.",
   },
-  photos: {
-    main: "/photos/main.png",
-    groom: "/photos/groom.jpg",
-    bride: "/photos/bride.jpg",
+  // 메인 슬라이드쇼 3장
+  slides: [
+    { src: "/photos/main01.jpg", alt: "메인 슬라이드 1" },
+    { src: "/photos/main02.jpg", alt: "메인 슬라이드 2" },
+    { src: "/photos/main03.jpg", alt: "메인 슬라이드 3" },
+  ],
+  // 안내(메뉴) 각 항목 hero 사진
+  menuHeroes: {
+    invitation: "/photos/menu01.jpg",
+    weddingDay: "/photos/menu02.jpg",
+    location: "/photos/menu03.jpg",
+    gallery: "/photos/menu04.jpg",
+    wishes: "/photos/menu05.jpg",
   },
   date: {
     iso: "2026-08-29T12:30:00+09:00",
@@ -76,8 +51,8 @@ export const weddingData = {
     transit: "자차 또는 택시 이용 권장드립니다.",
     coordinates: { lat: 34.7286, lng: 127.7258 },
   },
-  gallery: galleryFiles.map((f, i) => ({
-    src: `/photos/${f}`,
+  gallery: Array.from({ length: GALLERY_COUNT }, (_, i) => ({
+    src: `/photos/${String(i + 1).padStart(2, "0")}.jpg`,
     alt: `웨딩 사진 ${i + 1}`,
   })),
   accounts: {
