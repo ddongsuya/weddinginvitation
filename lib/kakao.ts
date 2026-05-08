@@ -60,12 +60,21 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
   });
 }
 
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) {
+    return /^https?:\/\//.test(explicit) ? explicit : `https://${explicit}`;
+  }
+  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+  if (vercelUrl) return `https://${vercelUrl}`;
+  if (typeof window !== "undefined") return window.location.origin;
+  return "";
+}
+
 export async function shareInvitation(): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      (typeof window !== "undefined" ? window.location.origin : "");
+    const siteUrl = resolveSiteUrl();
     const targetUrl = `${siteUrl}/`;
     const imageUrl = `${siteUrl}${weddingData.photos.main}`;
 
