@@ -31,71 +31,83 @@ export default function LocationPage() {
       />
 
       <section className="px-6 py-28 sm:px-10 sm:py-36">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.h2
+        <div className="mx-auto max-w-3xl">
+          {/* 1. 식장 이름 + 홀 이름 */}
+          <div className="text-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.9, delay: 0.1 }}
+              className="font-serif text-[clamp(2rem,6vw,4rem)] font-light leading-tight text-foreground"
+            >
+              {venue.name}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, delay: 0.25 }}
+              className="mt-4 text-base text-muted sm:text-lg"
+            >
+              {venue.hall}
+            </motion.p>
+          </div>
+
+          {/* 2. 지도 */}
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.9, delay: 0.1 }}
-            className="font-serif text-[clamp(2rem,6vw,4rem)] font-light leading-tight text-foreground"
+            transition={{ duration: 0.9, delay: 0.3 }}
+            className="mt-12 overflow-hidden rounded-2xl border border-stone-200/80 sm:mt-16"
           >
-            {venue.name}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.25 }}
-            className="mt-4 text-base text-muted sm:text-lg"
-          >
-            {venue.hall}
-          </motion.p>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            className="mx-auto mt-12 h-px w-12 origin-center bg-accent/40 sm:w-16"
-          />
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.45 }}
-            className="mt-12 text-base text-foreground sm:text-lg"
-          >
-            {venue.address}
-          </motion.p>
-          <motion.a
-            href={`tel:${telDigits}`}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.55 }}
-            className="mt-3 inline-block text-base text-muted transition-colors hover:text-accent sm:text-lg"
-          >
-            {venue.tel}
-          </motion.a>
-        </div>
-      </section>
-
-      <section className="px-6 pb-12 sm:px-10 sm:pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.9 }}
-          className="mx-auto max-w-3xl"
-        >
-          <div className="overflow-hidden rounded-2xl border border-stone-200/80">
             <NaverMap
               lat={lat}
               lng={lng}
               zoom={17}
               markerLabel={venue.name}
             />
+          </motion.div>
+
+          {/* 3. 주소 + 전화번호 (지도 아래) */}
+          <div className="mt-10 text-center sm:mt-12">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="text-base text-foreground sm:text-lg"
+            >
+              {venue.address}
+            </motion.p>
+            <motion.a
+              href={`tel:${telDigits}`}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-5 py-2.5 text-sm text-foreground transition-colors hover:border-accent/40 hover:text-accent sm:text-base"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              <span className="tracking-wide">{venue.tel}</span>
+            </motion.a>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       <section className="px-6 pb-20 sm:px-10 sm:pb-28">
