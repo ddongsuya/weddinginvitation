@@ -36,7 +36,7 @@ export function SubpageNav({ currentHref }: { currentHref: string }) {
           />
         ) : (
           <NavLink
-            href="/home"
+            href="/"
             num=""
             label="홈"
             direction="next"
