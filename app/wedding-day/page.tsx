@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { SubpageHero } from "../components-home/SubpageHero";
 import { SubpageNav } from "../components-home/SubpageNav";
@@ -19,28 +19,42 @@ function buildMonth(year: number, month: number) {
   return cells;
 }
 
-function useCountdown(target: Date) {
-  const [now, setNow] = useState<Date | null>(null);
-  useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  if (!now) return null;
-  const diff = target.getTime() - now.getTime();
+interface CountdownValue {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+function computeDiff(targetMs: number): CountdownValue {
+  const diff = targetMs - Date.now();
   if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    days: Math.floor(diff / 86_400_000),
+    hours: Math.floor((diff / 3_600_000) % 24),
+    minutes: Math.floor((diff / 60_000) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
 }
 
+function useCountdown(targetMs: number): CountdownValue {
+  const [val, setVal] = useState<CountdownValue>(() => computeDiff(targetMs));
+  useEffect(() => {
+    setVal(computeDiff(targetMs));
+    const id = setInterval(() => setVal(computeDiff(targetMs)), 1000);
+    return () => clearInterval(id);
+  }, [targetMs]);
+  return val;
+}
+
 export default function WeddingDayPage() {
   const { year, month, day } = weddingData.date;
-  const cells = buildMonth(year, month);
-  const countdown = useCountdown(new Date(weddingData.date.iso));
+  const cells = useMemo(() => buildMonth(year, month), [year, month]);
+  const targetMs = useMemo(
+    () => new Date(weddingData.date.iso).getTime(),
+    []
+  );
+  const countdown = useCountdown(targetMs);
 
   return (
     <main>
@@ -60,7 +74,7 @@ export default function WeddingDayPage() {
             className="font-serif"
           >
             <div className="text-base text-muted sm:text-lg">2026년 8월</div>
-            <div className="mt-6 text-[clamp(7rem,22vw,18rem)] font-light leading-none text-foreground">
+            <div className="mt-6 text-[clamp(7rem,22vw,18rem)] font-normal leading-none text-foreground">
               29
             </div>
             <div className="mt-6 text-base text-muted sm:text-lg">
@@ -168,16 +182,14 @@ export default function WeddingDayPage() {
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3 text-center sm:gap-6">
             {[
-              { label: "일", value: countdown?.days },
-              { label: "시간", value: countdown?.hours },
-              { label: "분", value: countdown?.minutes },
-              { label: "초", value: countdown?.seconds },
+              { label: "일", value: countdown.days },
+              { label: "시간", value: countdown.hours },
+              { label: "분", value: countdown.minutes },
+              { label: "초", value: countdown.seconds },
             ].map((it) => (
               <div key={it.label}>
-                <div className="font-serif text-[clamp(1.8rem,6vw,3.5rem)] font-light text-foreground tabular-nums">
-                  {it.value === undefined
-                    ? "--"
-                    : String(it.value).padStart(2, "0")}
+                <div className="font-serif text-[clamp(1.8rem,6vw,3.5rem)] font-normal text-foreground tabular-nums">
+                  {String(it.value).padStart(2, "0")}
                 </div>
                 <div className="mt-2 font-sans text-xs text-muted sm:text-sm">
                   {it.label}
@@ -190,9 +202,7 @@ export default function WeddingDayPage() {
               {weddingData.groom.name} ♥ {weddingData.bride.name}
             </span>
             의 결혼식이{" "}
-            <span className="text-accent">
-              {countdown ? countdown.days : "--"}일
-            </span>{" "}
+            <span className="text-accent">{countdown.days}일</span>{" "}
             남았습니다.
           </p>
         </motion.div>

@@ -21,7 +21,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-center font-serif text-[clamp(1.8rem,5vw,3rem)] font-light leading-tight text-foreground"
+            className="text-center font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal leading-tight text-foreground"
           >
             {weddingData.invitation.title}
           </motion.h2>

@@ -69,7 +69,7 @@ export default function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-light text-foreground">
+            <h2 className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal text-foreground">
               우리의 순간들
             </h2>
             <p className="mt-4 font-sans text-sm text-muted sm:text-base">
@@ -107,7 +107,7 @@ export default function GalleryPage() {
                       src={photo.src}
                       alt={photo.alt}
                       fill
-                      sizes="(max-width: 640px) 33vw, 33vw"
+                      sizes="33vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       loading={i < 6 ? "eager" : "lazy"}
                     />
@@ -134,13 +134,19 @@ export default function GalleryPage() {
                 </motion.button>
                 <div className="flex items-center gap-2">
                   {Array.from({ length: pageCount }).map((_, i) => (
-                    <button
+                    <motion.button
                       key={i}
                       onClick={() => setPage(i)}
+                      whileHover={{ scaleY: 1.4 }}
+                      whileTap={{ scaleY: 0.7 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 18 }}
                       className={`h-1.5 rounded-full transition-all ${
-                        i === page ? "w-8 bg-accent" : "w-1.5 bg-stone-300"
+                        i === page
+                          ? "w-8 bg-accent"
+                          : "w-1.5 bg-stone-300 hover:bg-stone-400"
                       }`}
                       aria-label={`${i + 1}페이지로 이동`}
+                      aria-current={i === page ? "page" : undefined}
                     />
                   ))}
                 </div>
@@ -283,7 +289,7 @@ export default function GalleryPage() {
                     fill
                     sizes="100vw"
                     className="object-contain"
-                    priority
+                    loading="eager"
                   />
                 </motion.div>
               </AnimatePresence>

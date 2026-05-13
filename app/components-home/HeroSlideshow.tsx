@@ -24,14 +24,14 @@ const SLIDES: Slide[] = [
         variant="rise"
         staggerChildren={0.12}
         delay={0.15}
-        className="font-serif text-[clamp(5rem,22vw,17rem)] font-light leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+        className="font-serif text-[clamp(5rem,22vw,17rem)] font-normal leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
       />
     ),
   },
   {
     src: weddingData.slides[1].src,
     render: (key) => (
-      <div className="font-serif font-light leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+      <div className="font-serif font-normal leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <SplitText
           animationKey={`g-${key}`}
           text={weddingData.groom.name}
@@ -69,7 +69,7 @@ const SLIDES: Slide[] = [
   {
     src: weddingData.slides[2].src,
     render: (key) => (
-      <div className="font-serif font-light leading-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+      <div className="font-serif font-normal leading-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <SplitText
           animationKey={`d1-${key}`}
           text="2026년 08월 29일"
@@ -97,10 +97,29 @@ export function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setCurrent((c) => (c + 1) % SLIDES.length);
-    }, SLIDE_MS);
-    return () => clearInterval(id);
+    let id: number | undefined;
+    const start = () => {
+      if (id != null) return;
+      id = window.setInterval(() => {
+        setCurrent((c) => (c + 1) % SLIDES.length);
+      }, SLIDE_MS);
+    };
+    const stop = () => {
+      if (id != null) {
+        clearInterval(id);
+        id = undefined;
+      }
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+    start();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
   return (

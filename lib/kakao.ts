@@ -1,4 +1,5 @@
 import { weddingData } from "./data";
+import { resolveSiteUrl } from "./site-url";
 
 interface KakaoShareApi {
   Share: {
@@ -60,17 +61,6 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
   });
 }
 
-function resolveSiteUrl(): string {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicit) {
-    return /^https?:\/\//.test(explicit) ? explicit : `https://${explicit}`;
-  }
-  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
-  if (vercelUrl) return `https://${vercelUrl}`;
-  if (typeof window !== "undefined") return window.location.origin;
-  return "";
-}
-
 export async function shareInvitation(): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
@@ -94,7 +84,7 @@ export async function shareInvitation(): Promise<void> {
       ],
     });
   } catch (err) {
-    console.error("Kakao share failed:", err);
-    alert("카카오톡 공유를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.");
+    // Silent fail — environment issue, no user action available
+    console.warn("Kakao share unavailable:", err);
   }
 }

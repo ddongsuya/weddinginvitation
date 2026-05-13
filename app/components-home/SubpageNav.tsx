@@ -89,7 +89,7 @@ function NavAction({
     <button
       type="button"
       onClick={() => {
-        onClick();
+        void onClick();
       }}
       className="group block w-full text-right"
     >

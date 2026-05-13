@@ -7,8 +7,6 @@
   --foreground: #2d2a26;
   --accent: #b08968;
   --muted: #6b6862;
-
-  --font-active: var(--font-gowun-batang), "Noto Serif KR", serif;
 }
 
 html {
@@ -18,14 +16,18 @@ html {
 body {
   background: transparent;
   color: var(--foreground);
-  font-family: var(--font-active);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 
-.font-serif,
-.font-sans {
-  font-family: var(--font-active);
+/* Keyboard focus indicator — replaces removed default outline */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 @layer utilities {
@@ -37,9 +39,26 @@ body {
   }
 }
 
+/* Hide native cursor on hover-capable devices (custom cursor takes over).
+   Restore native cursors for elements where text/disabled feedback matters. */
 @media (hover: hover) and (pointer: fine) {
-  body,
+  body {
+    cursor: none;
+  }
   body * {
-    cursor: none !important;
+    cursor: none;
+  }
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    cursor: text !important;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed !important;
+  }
+  iframe {
+    cursor: auto !important;
   }
 }

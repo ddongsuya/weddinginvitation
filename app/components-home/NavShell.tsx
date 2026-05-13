@@ -24,7 +24,11 @@ export function NavShell({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between px-6 py-6 sm:px-10 sm:py-8"
+            className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between px-6 pb-6 sm:px-10 sm:pb-8"
+            style={{
+              paddingTop:
+                "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
+            }}
           >
             <Link
               href="/"

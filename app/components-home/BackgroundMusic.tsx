@@ -5,16 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const autoTriedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
-  const [autoTried, setAutoTried] = useState(false);
 
-  // First user interaction (click / touch / scroll / keydown) attempts autoplay
+  // First user interaction (click / touch / scroll / keydown) attempts autoplay.
+  // Tracked via ref to avoid re-renders + listener re-registration.
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const tryAutoplay = () => {
-      if (autoTried) return;
-      setAutoTried(true);
+      if (autoTriedRef.current) return;
+      autoTriedRef.current = true;
       const audio = audioRef.current;
       if (!audio) return;
       audio
@@ -29,7 +30,7 @@ export function BackgroundMusic() {
     window.addEventListener("click", tryAutoplay, opts);
     window.addEventListener("touchstart", tryAutoplay, opts);
     window.addEventListener("scroll", tryAutoplay, opts);
-    window.addEventListener("keydown", tryAutoplay);
+    window.addEventListener("keydown", tryAutoplay, { once: true });
 
     return () => {
       window.removeEventListener("click", tryAutoplay);
@@ -37,7 +38,7 @@ export function BackgroundMusic() {
       window.removeEventListener("scroll", tryAutoplay);
       window.removeEventListener("keydown", tryAutoplay);
     };
-  }, [autoTried]);
+  }, []);
 
   const toggle = () => {
     const audio = audioRef.current;
@@ -61,7 +62,14 @@ export function BackgroundMusic() {
         <source src="/audio/bgm.m4a" type="audio/mp4" />
       </audio>
 
-      <div className="pointer-events-none fixed bottom-5 left-5 z-30 sm:bottom-7 sm:left-7">
+      <div
+        className="pointer-events-none fixed z-30"
+        style={{
+          bottom:
+            "max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
+          left: "max(1.25rem, calc(env(safe-area-inset-left) + 0.5rem))",
+        }}
+      >
         <div className="relative">
           {/* Pulsing ring while playing */}
           <AnimatePresence>

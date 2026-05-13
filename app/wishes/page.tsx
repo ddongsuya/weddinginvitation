@@ -32,7 +32,7 @@ export default function WishesPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-light leading-tight text-foreground"
+            className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal leading-tight text-foreground"
           >
             마음 전하실 곳
           </motion.h2>
@@ -137,16 +137,52 @@ function SideToggle({
   );
 }
 
+function fallbackCopy(text: string): boolean {
+  if (typeof document === "undefined") return false;
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.setAttribute("readonly", "");
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  el.style.pointerEvents = "none";
+  document.body.appendChild(el);
+  el.select();
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
+  document.body.removeChild(el);
+  return ok;
+}
+
 function AccountRow({ account }: { account: Account }) {
   const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const copy = async () => {
+    const showResult = (ok: boolean) => {
+      if (ok) {
+        setCopied(true);
+        setFailed(false);
+        setTimeout(() => setCopied(false), 1500);
+      } else {
+        setFailed(true);
+        setTimeout(() => setFailed(false), 2000);
+      }
+    };
+
     try {
       await navigator.clipboard.writeText(account.number);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
+      showResult(true);
+    } catch {
+      showResult(fallbackCopy(account.number));
+    }
   };
+
+  const buttonLabel = failed ? "복사 실패" : copied ? "복사됨" : "복사";
+  const buttonKey = failed ? "f" : copied ? "y" : "n";
 
   return (
     <motion.div
@@ -170,14 +206,14 @@ function AccountRow({ account }: { account: Account }) {
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
-            key={copied ? "y" : "n"}
+            key={buttonKey}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
             className="inline-block"
           >
-            {copied ? "복사됨" : "복사"}
+            {buttonLabel}
           </motion.span>
         </AnimatePresence>
       </motion.button>

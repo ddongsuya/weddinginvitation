@@ -95,12 +95,14 @@ export function NaverMap({
   useEffect(() => {
     if (!clientId) return;
     const SCRIPT_ID = "naver-maps-sdk";
+    let cancelled = false;
+    let pollId: number | undefined;
 
-    window.navermap_authFailure = () => {
-      setAuthFailed(true);
-    };
+    const handleAuthFailure = () => setAuthFailed(true);
+    window.navermap_authFailure = handleAuthFailure;
 
     const init = () => {
+      if (cancelled) return;
       const naverMaps = window.naver?.maps;
       if (!naverMaps || !mapRef.current) return;
       try {
@@ -124,29 +126,38 @@ export function NaverMap({
 
     if (window.naver?.maps) {
       init();
-      return;
+    } else {
+      const existing = document.getElementById(
+        SCRIPT_ID
+      ) as HTMLScriptElement | null;
+      if (existing) {
+        pollId = window.setInterval(() => {
+          if (window.naver?.maps) {
+            clearInterval(pollId);
+            pollId = undefined;
+            init();
+          }
+        }, 100);
+      } else {
+        const script = document.createElement("script");
+        script.id = SCRIPT_ID;
+        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
+        script.async = true;
+        script.onload = init;
+        script.onerror = () => setAuthFailed(true);
+        document.head.appendChild(script);
+      }
     }
 
-    const existing = document.getElementById(
-      SCRIPT_ID
-    ) as HTMLScriptElement | null;
-    if (existing) {
-      const id = setInterval(() => {
-        if (window.naver?.maps) {
-          clearInterval(id);
-          init();
-        }
-      }, 100);
-      return () => clearInterval(id);
-    }
-
-    const script = document.createElement("script");
-    script.id = SCRIPT_ID;
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
-    script.async = true;
-    script.onload = init;
-    script.onerror = () => setAuthFailed(true);
-    document.head.appendChild(script);
+    return () => {
+      cancelled = true;
+      if (pollId != null) clearInterval(pollId);
+      // Only clear the handler if it's still ours — avoid clobbering a
+      // subsequent NaverMap instance that already replaced it.
+      if (window.navermap_authFailure === handleAuthFailure) {
+        delete window.navermap_authFailure;
+      }
+    };
   }, [clientId, lat, lng, zoom, markerLabel]);
 
   const wrapperClass = className ?? "block h-[360px] w-full sm:h-[420px]";

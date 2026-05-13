@@ -68,7 +68,13 @@ export function MenuOverlay({
           aria-modal="true"
           role="dialog"
         >
-          <header className="absolute inset-x-0 top-0 flex items-center justify-between px-6 py-6 sm:px-10 sm:py-8">
+          <header
+            className="absolute inset-x-0 top-0 flex items-center justify-between px-6 pb-6 sm:px-10 sm:pb-8"
+            style={{
+              paddingTop:
+                "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
+            }}
+          >
             <button
               type="button"
               onClick={goHome}
@@ -113,6 +119,7 @@ export function MenuOverlay({
                       whileHover={{ x: 12 }}
                       whileTap={{ scale: 0.98, x: 6 }}
                       transition={{ type: "spring", stiffness: 380, damping: 24 }}
+                      aria-current={isActive ? "page" : undefined}
                       className={`group flex items-baseline gap-5 text-left transition-colors sm:gap-7 ${
                         isActive
                           ? "text-white"
@@ -126,7 +133,7 @@ export function MenuOverlay({
                       >
                         {item.num}
                       </span>
-                      <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-light leading-tight">
+                      <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-normal leading-tight">
                         {item.label}
                       </span>
                       <motion.span
@@ -163,7 +170,7 @@ export function MenuOverlay({
                   <span className="font-sans text-sm text-white/45 sm:text-base">
                     {SHARE_ITEM.num}
                   </span>
-                  <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-light leading-tight">
+                  <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-normal leading-tight">
                     {SHARE_ITEM.label}
                   </span>
                   <motion.span
@@ -179,7 +186,13 @@ export function MenuOverlay({
             </ul>
           </nav>
 
-          <footer className="absolute inset-x-0 bottom-0 flex items-end justify-between px-6 py-6 sm:px-10 sm:py-8">
+          <footer
+            className="absolute inset-x-0 bottom-0 flex items-end justify-between px-6 pt-6 sm:px-10 sm:pt-8"
+            style={{
+              paddingBottom:
+                "max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
+            }}
+          >
             <p className="font-serif text-xs text-white/55 sm:text-sm">
               2026 . 08 . 29
             </p>

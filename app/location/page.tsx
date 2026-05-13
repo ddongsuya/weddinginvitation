@@ -7,20 +7,59 @@ import { SubpageNav } from "../components-home/SubpageNav";
 import { NaverMap } from "../components-home/NaverMap";
 import { weddingData } from "@/lib/data";
 
+function fallbackCopy(text: string): boolean {
+  if (typeof document === "undefined") return false;
+  const el = document.createElement("textarea");
+  el.value = text;
+  el.setAttribute("readonly", "");
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  el.style.pointerEvents = "none";
+  document.body.appendChild(el);
+  el.select();
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
+  document.body.removeChild(el);
+  return ok;
+}
+
 export default function LocationPage() {
   const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
   const { venue } = weddingData;
   const query = encodeURIComponent(`${venue.name} ${venue.address}`);
   const { lat, lng } = venue.coordinates;
   const telDigits = venue.tel.replace(/-/g, "");
 
   const copyAddress = async () => {
+    const showResult = (ok: boolean) => {
+      if (ok) {
+        setCopied(true);
+        setFailed(false);
+        setTimeout(() => setCopied(false), 1500);
+      } else {
+        setFailed(true);
+        setTimeout(() => setFailed(false), 2000);
+      }
+    };
     try {
       await navigator.clipboard.writeText(venue.address);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
+      showResult(true);
+    } catch {
+      showResult(fallbackCopy(venue.address));
+    }
   };
+
+  const copyLabel = failed
+    ? "복사 실패"
+    : copied
+      ? "주소가 복사되었습니다"
+      : "주소 복사";
+  const copyKey = failed ? "f" : copied ? "y" : "n";
 
   return (
     <main>
@@ -39,7 +78,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="font-serif text-[clamp(2rem,6vw,4rem)] font-light leading-tight text-foreground"
+              className="font-serif text-[clamp(2rem,6vw,4rem)] font-normal leading-tight text-foreground"
             >
               {venue.name}
             </motion.h2>
@@ -154,14 +193,14 @@ export default function LocationPage() {
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
-                key={copied ? "y" : "n"}
+                key={copyKey}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.25 }}
                 className="inline-block"
               >
-                {copied ? "주소가 복사되었습니다" : "주소 복사"}
+                {copyLabel}
               </motion.span>
             </AnimatePresence>
           </motion.button>

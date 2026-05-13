@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Gowun_Batang } from "next/font/google";
 import { NavShell } from "./components-home/NavShell";
+import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const gowunBatang = Gowun_Batang({
@@ -9,16 +10,6 @@ const gowunBatang = Gowun_Batang({
   variable: "--font-gowun-batang",
   display: "swap",
 });
-
-function resolveSiteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicit) {
-    return /^https?:\/\//.test(explicit) ? explicit : `https://${explicit}`;
-  }
-  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL;
-  if (vercelUrl) return `https://${vercelUrl}`;
-  return "http://localhost:3000";
-}
 
 const SITE_URL = resolveSiteUrl();
 

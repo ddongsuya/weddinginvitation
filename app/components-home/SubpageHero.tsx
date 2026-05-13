@@ -52,7 +52,6 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
             priority
             className="object-cover"
             onLoad={() => setLoaded(true)}
-            onLoadingComplete={() => setLoaded(true)}
           />
         </motion.div>
       </motion.div>
@@ -73,7 +72,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
         >
           {num}
         </motion.p>
-        <h1 className="mt-4 font-serif text-[clamp(3rem,9vw,7rem)] font-light leading-[0.95] sm:mt-6">
+        <h1 className="mt-4 font-serif text-[clamp(3rem,9vw,7rem)] font-normal leading-[0.95] sm:mt-6">
           <SplitText
             text={label}
             variant="rise"
