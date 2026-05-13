@@ -11,6 +11,8 @@
 
 html {
   background: linear-gradient(180deg, #f4ede4 0%, #efe4d6 100%);
+  /* Disable iOS rubber-band bounce + pull-to-refresh — page feels fixed */
+  overscroll-behavior: none;
 }
 
 body {
@@ -18,6 +20,7 @@ body {
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 /* Keyboard focus indicator — replaces removed default outline */

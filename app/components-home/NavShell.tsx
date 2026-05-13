@@ -60,9 +60,9 @@ export function NavShell({ children }: { children: React.ReactNode }) {
       <AnimatePresence mode="wait">
         <motion.div
           key={pathname}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           {children}
         </motion.div>

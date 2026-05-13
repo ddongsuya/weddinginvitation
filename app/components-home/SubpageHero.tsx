@@ -16,7 +16,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <section className="relative h-[80vh] w-full overflow-hidden">
+    <section className="relative h-screen w-full overflow-hidden">
       <motion.div
         initial={false}
         animate={{
