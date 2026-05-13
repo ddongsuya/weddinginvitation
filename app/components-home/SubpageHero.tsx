@@ -17,25 +17,33 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      <motion.div
-        initial={false}
-        animate={{
-          filter: loaded ? "blur(0px)" : "blur(20px)",
-          opacity: loaded ? 1 : 0.7,
-        }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+      {/* Static photo layer — promoted to its own compositor layer so
+          scrolling never repaints it. No filter/transform animation
+          beyond the one-shot blur-up on initial load. */}
+      <div
         className="absolute inset-0"
+        style={{
+          transform: "translate3d(0, 0, 0)",
+          willChange: "auto",
+        }}
       >
-        <Image
-          src={photo}
-          alt=""
-          fill
-          sizes="100vw"
-          priority
-          className="object-cover"
-          onLoad={() => setLoaded(true)}
-        />
-      </motion.div>
+        <motion.div
+          initial={false}
+          animate={{ opacity: loaded ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={photo}
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+            onLoad={() => setLoaded(true)}
+          />
+        </motion.div>
+      </div>
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/65" />
 

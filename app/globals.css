@@ -27,13 +27,10 @@ body {
   touch-action: pan-y;
 }
 
-/* iOS Safari 100vh jumps when the address bar collapses — use dynamic
-   viewport height where supported so hero sections don't resize with chrome. */
-@supports (height: 100dvh) {
-  .h-screen {
-    height: 100dvh;
-  }
-}
+/* Keep .h-screen at a fixed 100vh — do NOT use dvh: dvh changes as the
+   iOS address bar collapses, which makes hero images resize during scroll
+   and stutter. Static 100vh trades a tiny initial overflow for rock-solid,
+   non-resizing hero sections. */
 
 /* Keyboard focus indicator — replaces removed default outline */
 :focus {
