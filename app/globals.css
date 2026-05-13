@@ -11,8 +11,10 @@
 
 html {
   background: linear-gradient(180deg, #f4ede4 0%, #efe4d6 100%);
-  /* Disable iOS rubber-band bounce + pull-to-refresh — page feels fixed */
+  /* Lock the page: no iOS rubber-band, no pull-to-refresh, no double-tap zoom */
   overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -21,6 +23,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
+  /* Allow vertical scroll only; disables pinch-zoom + double-tap-zoom delay */
+  touch-action: pan-y;
+}
+
+/* iOS Safari 100vh jumps when the address bar collapses — use dynamic
+   viewport height where supported so hero sections don't resize with chrome. */
+@supports (height: 100dvh) {
+  .h-screen {
+    height: 100dvh;
+  }
 }
 
 /* Keyboard focus indicator — replaces removed default outline */

@@ -1,8 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Gowun_Batang } from "next/font/google";
 import { NavShell } from "./components-home/NavShell";
 import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
 
 const gowunBatang = Gowun_Batang({
   subsets: ["latin"],
