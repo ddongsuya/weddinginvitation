@@ -173,7 +173,7 @@ export function HeroSlideshow() {
           if (info.offset.x < -80 || swipe < -10000) goNext();
           else if (info.offset.x > 80 || swipe > 10000) goPrev();
         }}
-        style={{ touchAction: "pan-y" }}
+        style={{ touchAction: "none" }}
       />
 
       <AnimatePresence mode="wait">

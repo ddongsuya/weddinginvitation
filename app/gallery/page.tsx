@@ -290,7 +290,7 @@ export default function GalleryPage() {
                     else if (info.offset.x > 80 || swipe > 10000) goPrev();
                   }}
                   className="absolute inset-0 flex items-center justify-center px-4 sm:px-12"
-                  style={{ touchAction: "pan-y" }}
+                  style={{ touchAction: "none" }}
                 >
                   <Image
                     src={weddingData.gallery[active].src}

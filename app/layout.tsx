@@ -11,6 +11,7 @@ export const viewport: Viewport = {
   minimumScale: 1,
   userScalable: false,
   viewportFit: "cover",
+  themeColor: "#b08968",
 };
 
 const gowunBatang = Gowun_Batang({
@@ -27,6 +28,18 @@ export const metadata: Metadata = {
   title: "임정모 ♥ 최화형 결혼합니다",
   description:
     "2026년 8월 29일 토요일 낮 12시 30분, 히든베이 호텔에서 결혼식이 있습니다.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "결혼 청첩장",
+  },
+  applicationName: "임정모 ♥ 최화형 결혼 청첩장",
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
   openGraph: {
     title: "임정모 ♥ 최화형 결혼합니다",
     description: "2026년 8월 29일 토요일 낮 12시 30분",
@@ -40,6 +53,10 @@ export const metadata: Metadata = {
         alt: "임정모 ♥ 최화형 결혼식 청첩장",
       },
     ],
+  },
+  other: {
+    // Android Chrome — opens fullscreen when added to home screen
+    "mobile-web-app-capable": "yes",
   },
 };
 

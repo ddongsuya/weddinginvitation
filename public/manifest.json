@@ -1,0 +1,20 @@
+{
+  "name": "임정모 ♥ 최화형 결혼합니다",
+  "short_name": "결혼 청첩장",
+  "description": "2026년 8월 29일 토요일 낮 12시 30분, 히든베이 호텔",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdfcfa",
+  "theme_color": "#b08968",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "/photos/main01.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
