@@ -255,9 +255,9 @@ export default function GalleryPage() {
               </svg>
             </motion.button>
 
-            {/* Photo (slides on prev/next) */}
+            {/* Photo (swipe + slide on prev/next) — full viewport */}
             <div
-              className="relative h-[85vh] w-full max-w-4xl overflow-hidden"
+              className="absolute inset-0 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <AnimatePresence mode="wait" custom={direction}>
@@ -281,7 +281,16 @@ export default function GalleryPage() {
                   animate="center"
                   exit="leave"
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.18}
+                  onDragEnd={(_, info) => {
+                    const swipe = Math.abs(info.offset.x) * info.velocity.x;
+                    if (info.offset.x < -80 || swipe < -10000) goNext();
+                    else if (info.offset.x > 80 || swipe > 10000) goPrev();
+                  }}
+                  className="absolute inset-0 flex items-center justify-center px-4 sm:px-12"
+                  style={{ touchAction: "pan-y" }}
                 >
                   <Image
                     src={weddingData.gallery[active].src}
@@ -290,6 +299,7 @@ export default function GalleryPage() {
                     sizes="100vw"
                     className="object-contain"
                     loading="eager"
+                    draggable={false}
                   />
                 </motion.div>
               </AnimatePresence>

@@ -61,12 +61,32 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
   });
 }
 
+// Build a Google Calendar "Add Event" URL.
+// Wedding day spec: 2026-08-29 12:30 KST (= 03:30 UTC), 2-hour event.
+function buildCalendarUrl(): string {
+  const title = `${weddingData.groom.name} ♥ ${weddingData.bride.name} 결혼식`;
+  const details = `${weddingData.date.display}\n${weddingData.venue.name} ${weddingData.venue.hall}`;
+  const location = `${weddingData.venue.name}, ${weddingData.venue.address}`;
+  // UTC times so the event lands at 12:30 KST regardless of viewer's timezone
+  const start = "20260829T033000Z";
+  const end = "20260829T053000Z";
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${start}/${end}`,
+    details,
+    location,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 export async function shareInvitation(): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
     const siteUrl = resolveSiteUrl();
     const targetUrl = `${siteUrl}/`;
     const imageUrl = `${siteUrl}${weddingData.slides[0].src}`;
+    const calendarUrl = buildCalendarUrl();
 
     kakao.Share.sendDefault({
       objectType: "feed",
@@ -80,6 +100,10 @@ export async function shareInvitation(): Promise<void> {
         {
           title: "청첩장 보기",
           link: { mobileWebUrl: targetUrl, webUrl: targetUrl },
+        },
+        {
+          title: "일정 등록하기",
+          link: { mobileWebUrl: calendarUrl, webUrl: calendarUrl },
         },
       ],
     });

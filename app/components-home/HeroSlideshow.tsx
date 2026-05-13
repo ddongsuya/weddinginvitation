@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, ReactNode } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { weddingData } from "@/lib/data";
@@ -95,11 +95,19 @@ const SLIDES: Slide[] = [
 
 export function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
+  const pausedRef = useRef(false);
+
+  const goNext = useCallback(() => {
+    setCurrent((c) => (c + 1) % SLIDES.length);
+  }, []);
+  const goPrev = useCallback(() => {
+    setCurrent((c) => (c - 1 + SLIDES.length) % SLIDES.length);
+  }, []);
 
   useEffect(() => {
     let id: number | undefined;
     const start = () => {
-      if (id != null) return;
+      if (id != null || pausedRef.current) return;
       id = window.setInterval(() => {
         setCurrent((c) => (c + 1) % SLIDES.length);
       }, SLIDE_MS);
@@ -152,6 +160,22 @@ export function HeroSlideshow() {
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/35 to-black/55" />
 
+      {/* Swipe capture layer — covers everything except dot row at bottom */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-x-0 top-0 z-10 bottom-20"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.18}
+        dragSnapToOrigin
+        onDragEnd={(_, info) => {
+          const swipe = Math.abs(info.offset.x) * info.velocity.x;
+          if (info.offset.x < -80 || swipe < -10000) goNext();
+          else if (info.offset.x > 80 || swipe > 10000) goPrev();
+        }}
+        style={{ touchAction: "pan-y" }}
+      />
+
       <AnimatePresence mode="wait">
         <motion.div
           key={`text-${current}`}
@@ -159,7 +183,7 @@ export function HeroSlideshow() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-x-0 top-[24vh] flex justify-center px-8 text-center sm:top-[26vh] sm:px-12"
+          className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-8 text-center sm:top-[26vh] sm:px-12"
         >
           <motion.div
             animate={{ y: [0, -8, 0], rotate: [-0.3, 0.3, -0.3] }}
