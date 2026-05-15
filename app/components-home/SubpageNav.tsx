@@ -13,6 +13,7 @@ export function SubpageNav({ currentHref }: { currentHref: string }) {
 
   return (
     <nav
+      data-bottom-nav
       className="border-t border-stone-200/70 px-6 py-12 sm:px-10 sm:py-16"
       aria-label="페이지 네비게이션"
     >
@@ -115,8 +116,10 @@ function NavCardInner({
       transition={{ type: "spring", stiffness: 360, damping: 24 }}
       className={`flex flex-col ${isPrev ? "items-start" : "items-end"}`}
     >
-      <span className="font-sans text-xs text-muted sm:text-sm">{caption}</span>
-      <span className="relative mt-3 inline-block font-serif text-xl text-foreground sm:text-2xl">
+      <span className="font-serif text-[13px] tracking-[0.15em] text-muted sm:text-sm">
+        {caption}
+      </span>
+      <span className="relative mt-3 inline-block font-serif text-xl tracking-[-0.015em] text-foreground sm:text-2xl">
         {label}
         <span
           aria-hidden

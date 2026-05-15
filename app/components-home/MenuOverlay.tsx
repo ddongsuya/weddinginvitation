@@ -127,13 +127,13 @@ export function MenuOverlay({
                       }`}
                     >
                       <span
-                        className={`font-sans text-sm sm:text-base ${
-                          isActive ? "text-accent" : "text-white/45"
+                        className={`font-serif text-sm tracking-[0.15em] sm:text-base ${
+                          isActive ? "text-accent" : "text-white/55"
                         }`}
                       >
                         {item.num}
                       </span>
-                      <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-normal leading-tight">
+                      <span className="font-serif text-[clamp(2.3rem,7.8vw,4.4rem)] font-normal leading-[1.1] tracking-[-0.02em]">
                         {item.label}
                       </span>
                       <motion.span
@@ -167,10 +167,10 @@ export function MenuOverlay({
                   transition={{ type: "spring", stiffness: 380, damping: 24 }}
                   className="group flex items-baseline gap-5 text-left text-white/85 transition-colors hover:text-white sm:gap-7"
                 >
-                  <span className="font-sans text-sm text-white/45 sm:text-base">
+                  <span className="font-serif text-sm tracking-[0.15em] text-white/55 sm:text-base">
                     {SHARE_ITEM.num}
                   </span>
-                  <span className="font-serif text-[clamp(2.2rem,7.5vw,4.2rem)] font-normal leading-tight">
+                  <span className="font-serif text-[clamp(2.3rem,7.8vw,4.4rem)] font-normal leading-[1.1] tracking-[-0.02em]">
                     {SHARE_ITEM.label}
                   </span>
                   <motion.span
@@ -193,10 +193,10 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
             }}
           >
-            <p className="font-serif text-xs text-white/55 sm:text-sm">
+            <p className="font-serif text-[13px] tracking-[0.2em] text-white/70 sm:text-sm">
               2026 . 08 . 29
             </p>
-            <p className="hidden font-serif text-xs text-white/55 sm:block sm:text-sm">
+            <p className="hidden font-serif text-[13px] tracking-[0.15em] text-white/70 sm:block sm:text-sm">
               {weddingData.venue.name}
             </p>
           </footer>

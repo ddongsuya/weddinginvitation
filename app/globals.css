@@ -4,9 +4,14 @@
 
 :root {
   --background: #fdfcfa;
-  --foreground: #2d2a26;
-  --accent: #b08968;
-  --muted: #6b6862;
+  /* Slightly deeper ink — readability over pure-black harshness.
+     Contrast vs #f4ede4 (page bg) = ~12:1 (AAA). */
+  --foreground: #25221e;
+  --accent: #a67d54;
+  /* Was #6b6862 (~5.4:1, borderline AA). Now #524e48 ≈ 8.3:1 (AAA).
+     Premium invitations universally use a darker secondary tone so
+     captions/labels stay legible against off-white cards. */
+  --muted: #524e48;
 }
 
 html {
@@ -21,10 +26,35 @@ body {
   background: transparent;
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
   /* Allow vertical scroll only; disables pinch-zoom + double-tap-zoom delay */
   touch-action: pan-y;
+  /* Korean typography baseline — these compound to "premium feel":
+     - kern + liga: shape/kerning info from the font
+     - palt: proportional kana/CJK metrics (tighter, even gaps)
+     - tracking pulled in slightly because Korean glyphs are full-width
+     - keep-all: never break Korean WORDS mid-character on wrap */
+  font-feature-settings: "kern" 1, "liga" 1, "palt" 1;
+  letter-spacing: -0.012em;
+  word-break: keep-all;
+  line-break: strict;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headlines breathe — moderate tracking, snug leading. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.025em;
+}
+
+/* Number-heavy text (counters, dates) should be monospaced-width so
+   the digits never jump as values tick. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* Use 100svh (small viewport height) where supported.

@@ -32,7 +32,7 @@ export default function WishesPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal leading-tight text-foreground"
+            className="font-serif text-[clamp(1.9rem,5.2vw,3.1rem)] font-normal leading-[1.2] tracking-[-0.025em] text-foreground"
           >
             마음 전하실 곳
           </motion.h2>
@@ -41,7 +41,7 @@ export default function WishesPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.8, delay: 0.25 }}
-            className="mx-auto mt-10 max-w-md text-base leading-loose text-muted sm:text-lg"
+            className="mx-auto mt-10 max-w-md text-[17px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-lg"
           >
             참석이 어려우신 분들을 위해
             <br />
@@ -96,7 +96,9 @@ function SideToggle({
         className="flex w-full items-center justify-between px-6 py-5 text-left sm:px-8 sm:py-6"
         aria-expanded={isOpen}
       >
-        <p className="text-lg text-foreground sm:text-xl">{label}</p>
+        <p className="font-serif text-lg tracking-[0.05em] text-foreground sm:text-xl">
+          {label}
+        </p>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
@@ -191,10 +193,13 @@ function AccountRow({ account }: { account: Account }) {
       className="flex items-center justify-between gap-3 rounded-2xl bg-stone-50 px-4 py-4 sm:px-6"
     >
       <div className="min-w-0">
-        <p className="text-xs text-muted sm:text-sm">{account.holder}</p>
-        <p className="mt-1 truncate text-sm text-foreground sm:text-base">
-          <span className="text-accent">{account.bank}</span> &nbsp;
-          {account.number}
+        <p className="text-[13px] tracking-wide text-muted sm:text-sm">
+          {account.holder}
+        </p>
+        <p className="mt-1.5 truncate text-[15px] leading-relaxed tracking-[-0.005em] text-foreground sm:text-base">
+          <span className="font-medium text-accent">{account.bank}</span>{" "}
+          &nbsp;
+          <span className="tabular-nums">{account.number}</span>
         </p>
       </div>
       <motion.button

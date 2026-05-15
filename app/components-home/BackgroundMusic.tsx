@@ -2,11 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const autoTriedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
+  // Hide the floating music button whenever the bottom page-nav scrolls
+  // into view — otherwise it sits on top of the "이전 · 다음" links.
+  const [bottomNavVisible, setBottomNavVisible] = useState(false);
+  const pathname = usePathname();
 
   // First user interaction (click / touch / scroll / keydown) attempts autoplay.
   // Tracked via ref to avoid re-renders + listener re-registration.
@@ -40,6 +45,25 @@ export function BackgroundMusic() {
     };
   }, []);
 
+  // Watch the subpage's bottom nav (data-bottom-nav). When it enters the
+  // viewport, fade the music button out so it never covers the prev/next
+  // menu links. Re-runs on pathname change because the nav element is
+  // recreated on each route.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setBottomNavVisible(false);
+    const el = document.querySelector("[data-bottom-nav]");
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) setBottomNavVisible(entry.isIntersecting);
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.01 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [pathname]);
+
   const toggle = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -62,13 +86,21 @@ export function BackgroundMusic() {
         <source src="/audio/bgm.m4a" type="audio/mp4" />
       </audio>
 
-      <div
+      <motion.div
         className="pointer-events-none fixed z-30"
+        animate={{
+          opacity: bottomNavVisible ? 0 : 1,
+          y: bottomNavVisible ? 24 : 0,
+          scale: bottomNavVisible ? 0.85 : 1,
+        }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         style={{
           bottom:
             "max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
           left: "max(1.25rem, calc(env(safe-area-inset-left) + 0.5rem))",
+          pointerEvents: bottomNavVisible ? "none" : undefined,
         }}
+        aria-hidden={bottomNavVisible}
       >
         <div className="relative">
           {/* Pulsing ring while playing */}
@@ -149,7 +181,7 @@ export function BackgroundMusic() {
             </AnimatePresence>
           </motion.button>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

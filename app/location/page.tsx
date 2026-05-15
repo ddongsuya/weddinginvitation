@@ -78,7 +78,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="font-serif text-[clamp(2rem,6vw,4rem)] font-normal leading-tight text-foreground"
+              className="font-serif text-[clamp(2rem,6vw,4rem)] font-normal leading-[1.15] tracking-[-0.025em] text-foreground"
             >
               {venue.name}
             </motion.h2>
@@ -87,7 +87,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.8, delay: 0.25 }}
-              className="mt-4 text-base text-muted sm:text-lg"
+              className="mt-5 text-[17px] tracking-wide text-muted sm:text-lg"
             >
               {venue.hall}
             </motion.p>
@@ -116,7 +116,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-base text-foreground sm:text-lg"
+              className="text-[17px] leading-[1.7] tracking-[-0.01em] text-foreground sm:text-lg"
             >
               {venue.address}
             </motion.p>
@@ -157,7 +157,7 @@ export default function LocationPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center text-base text-muted sm:text-lg">
+          <p className="text-center text-[17px] tracking-[0.04em] text-muted sm:text-lg">
             지도 앱에서 길찾기
           </p>
           <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
@@ -229,8 +229,10 @@ export default function LocationPage() {
 function Detail({ label, body }: { label: string; body: string }) {
   return (
     <div>
-      <p className="text-base text-accent sm:text-lg">{label}</p>
-      <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+      <p className="font-serif text-base tracking-[0.1em] text-accent sm:text-lg">
+        {label}
+      </p>
+      <p className="mt-4 text-[15px] leading-[1.85] tracking-[-0.01em] text-foreground/85 sm:text-base">
         {body}
       </p>
     </div>

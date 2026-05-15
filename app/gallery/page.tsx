@@ -69,10 +69,10 @@ export default function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal text-foreground">
+            <h2 className="font-serif text-[clamp(1.9rem,5.2vw,3.1rem)] font-normal leading-[1.2] text-foreground">
               우리의 순간들
             </h2>
-            <p className="mt-4 font-sans text-sm text-muted sm:text-base">
+            <p className="mt-5 font-serif text-[15px] tracking-wide text-muted sm:text-base">
               총 {total}장
             </p>
           </motion.div>
@@ -165,7 +165,7 @@ export default function GalleryPage() {
                   </svg>
                 </motion.button>
               </div>
-              <p className="font-serif text-sm text-muted">
+              <p className="font-serif text-[15px] tracking-[0.2em] text-muted tabular-nums">
                 {page + 1} / {pageCount}
               </p>
             </div>
@@ -192,67 +192,142 @@ export default function GalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.15 }}
-              className="absolute left-1/2 top-5 -translate-x-1/2 font-serif text-sm tracking-wider text-white/70 sm:top-6 sm:text-base"
+              className="absolute left-1/2 top-5 -translate-x-1/2 font-serif text-[15px] tracking-[0.25em] text-white/85 tabular-nums drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] sm:top-6 sm:text-base"
             >
               {active + 1} / {total}
             </motion.p>
 
-            {/* Close */}
+            {/* Close — minimal X with hover ring */}
             <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              whileHover={{ scale: 1.08, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
                 close();
               }}
-              className="absolute right-4 top-4 z-10 rounded-full bg-white/10 px-4 py-2 text-xs text-white backdrop-blur sm:right-6 sm:top-6 sm:text-sm"
+              className="group absolute right-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-white/[0.06] text-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] transition-colors hover:border-white/55 hover:bg-white/15 sm:right-6 sm:top-6 sm:h-12 sm:w-12"
               aria-label="닫기"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              닫기
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:h-[18px] sm:w-[18px]"
+                aria-hidden
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
             </motion.button>
 
-            {/* Prev */}
+            {/* Prev — elegant thin chevron with soft glow ring */}
             <motion.button
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ scale: 1.1, x: -3 }}
-              whileTap={{ scale: 0.92 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              whileHover="hover"
+              whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
                 goPrev();
               }}
-              className="absolute left-3 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 sm:left-6 sm:h-14 sm:w-14"
+              className="group absolute left-2 top-1/2 z-10 grid h-14 w-14 -translate-y-1/2 place-items-center sm:left-6 sm:h-20 sm:w-20"
               aria-label="이전 사진"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m15 18-6-6 6-6" />
-              </svg>
+              {/* Soft circular tap-target — visible on hover, ambient on rest */}
+              <motion.span
+                aria-hidden
+                variants={{
+                  rest: { scale: 0.85, opacity: 0.35 },
+                  hover: { scale: 1, opacity: 1 },
+                }}
+                initial="rest"
+                animate="rest"
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.35)] group-hover:border-white/55 group-hover:bg-white/15"
+              />
+              {/* Thin chevron — drop-shadow for legibility on any photo */}
+              <motion.svg
+                variants={{
+                  rest: { x: 0 },
+                  hover: { x: -3 },
+                }}
+                initial="rest"
+                transition={{ type: "spring", stiffness: 360, damping: 22 }}
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="relative text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] sm:h-7 sm:w-7"
+                aria-hidden
+              >
+                <path d="m15 5-7 7 7 7" />
+              </motion.svg>
             </motion.button>
 
-            {/* Next */}
+            {/* Next — mirrored design */}
             <motion.button
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ scale: 1.1, x: 3 }}
-              whileTap={{ scale: 0.92 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              whileHover="hover"
+              whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.stopPropagation();
                 goNext();
               }}
-              className="absolute right-3 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 sm:right-6 sm:h-14 sm:w-14"
+              className="group absolute right-2 top-1/2 z-10 grid h-14 w-14 -translate-y-1/2 place-items-center sm:right-6 sm:h-20 sm:w-20"
               aria-label="다음 사진"
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
+              <motion.span
+                aria-hidden
+                variants={{
+                  rest: { scale: 0.85, opacity: 0.35 },
+                  hover: { scale: 1, opacity: 1 },
+                }}
+                initial="rest"
+                animate="rest"
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.35)] group-hover:border-white/55 group-hover:bg-white/15"
+              />
+              <motion.svg
+                variants={{
+                  rest: { x: 0 },
+                  hover: { x: 3 },
+                }}
+                initial="rest"
+                transition={{ type: "spring", stiffness: 360, damping: 22 }}
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="relative text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] sm:h-7 sm:w-7"
+                aria-hidden
+              >
+                <path d="m9 5 7 7-7 7" />
+              </motion.svg>
             </motion.button>
 
             {/* Photo (swipe + slide on prev/next) — full viewport */}

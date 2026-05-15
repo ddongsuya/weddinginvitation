@@ -90,11 +90,15 @@ export async function shareInvitation(): Promise<void> {
     const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg`;
     const calendarUrl = buildCalendarUrl();
 
+    // Format the date as the spec asks: 2026.08.29 (토) 12:30 여수히든베이호텔
+    const { year, month, day, hour, minute, weekday } = weddingData.date;
+    const dateLine = `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")} (${weekday.charAt(0)}) ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} 여수히든베이호텔`;
+
     kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${weddingData.groom.name} ♥ ${weddingData.bride.name} 결혼합니다`,
-        description: weddingData.date.display,
+        title: `${weddingData.groom.name}♥${weddingData.bride.name}`,
+        description: dateLine,
         imageUrl,
         link: { mobileWebUrl: targetUrl, webUrl: targetUrl },
       },

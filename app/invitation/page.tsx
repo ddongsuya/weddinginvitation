@@ -21,7 +21,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-center font-serif text-[clamp(1.8rem,5vw,3rem)] font-normal leading-tight text-foreground"
+            className="text-center font-serif text-[clamp(1.9rem,5.4vw,3.1rem)] font-normal leading-[1.25] tracking-[-0.025em] text-foreground"
           >
             {weddingData.invitation.title}
           </motion.h2>
@@ -31,7 +31,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="mx-auto mt-16 max-w-md whitespace-pre-line text-center text-base leading-loose text-muted sm:text-lg sm:leading-loose"
+            className="mx-auto mt-16 max-w-md whitespace-pre-line text-center text-[17px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-lg sm:leading-[2]"
           >
             {weddingData.invitation.body}
           </motion.p>
@@ -85,12 +85,16 @@ function FamilyCard({
 }) {
   return (
     <div className="text-center">
-      <p className="font-serif text-base text-accent sm:text-lg">{role}</p>
-      <p className="mt-6 font-sans text-sm leading-relaxed text-foreground sm:text-base">
+      <p className="font-serif text-base tracking-wide text-accent sm:text-lg">
+        {role}
+      </p>
+      <p className="mt-6 font-serif text-[15px] leading-[1.7] text-foreground sm:text-base">
         {parents.father} &nbsp;·&nbsp; {parents.mother}
       </p>
-      <p className="mt-2 font-sans text-xs text-muted">의 {relationship}</p>
-      <p className="mt-3 font-serif text-2xl text-foreground sm:text-3xl">
+      <p className="mt-2 font-serif text-[13px] tracking-wide text-muted sm:text-sm">
+        의 {relationship}
+      </p>
+      <p className="mt-3 font-serif text-2xl tracking-[-0.02em] text-foreground sm:text-3xl">
         {name}
       </p>
     </div>

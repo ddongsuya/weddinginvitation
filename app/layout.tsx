@@ -25,9 +25,8 @@ const SITE_URL = resolveSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "임정모 ♥ 최화형 결혼합니다",
-  description:
-    "2026년 8월 29일 토요일 낮 12시 30분, 히든베이 호텔에서 결혼식이 있습니다.",
+  title: "임정모♥최화형",
+  description: "2026.08.29 (토) 12:30 여수히든베이호텔",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -41,8 +40,8 @@ export const metadata: Metadata = {
     address: false,
   },
   openGraph: {
-    title: "임정모 ♥ 최화형 결혼합니다",
-    description: "2026년 8월 29일 토요일 낮 12시 30분",
+    title: "임정모♥최화형",
+    description: "2026.08.29 (토) 12:30 여수히든베이호텔",
     type: "website",
     url: "/",
     images: [
