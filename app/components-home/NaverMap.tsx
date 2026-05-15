@@ -81,6 +81,31 @@ function OsmFrame({
   );
 }
 
+// Session-scoped flag so we don't re-attempt Naver after a known auth
+// failure. Set once when navermap_authFailure fires, then every subsequent
+// NaverMap mount in this tab skips the SDK entirely (no script load, no
+// console spam, no auth_fail.png blocked-by-client error). Cleared when
+// the tab is closed.
+const AUTH_FAIL_KEY = "naver_maps_auth_failed";
+
+function readAuthFailFlag(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.sessionStorage.getItem(AUTH_FAIL_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeAuthFailFlag() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(AUTH_FAIL_KEY, "1");
+  } catch {
+    /* private mode / quota — best effort */
+  }
+}
+
 export function NaverMap({
   lat,
   lng,
@@ -89,16 +114,23 @@ export function NaverMap({
   className,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [authFailed, setAuthFailed] = useState(false);
+  // Lazy initial — if this tab already saw an auth failure, start in the
+  // OSM-fallback state on first render so we never inject the Naver
+  // script again.
+  const [authFailed, setAuthFailed] = useState(readAuthFailFlag);
   const clientId = process.env.NEXT_PUBLIC_NCP_CLIENT_ID;
 
   useEffect(() => {
     if (!clientId) return;
+    if (authFailed) return; // Already known bad — skip SDK entirely.
     const SCRIPT_ID = "naver-maps-sdk";
     let cancelled = false;
     let pollId: number | undefined;
 
-    const handleAuthFailure = () => setAuthFailed(true);
+    const handleAuthFailure = () => {
+      writeAuthFailFlag();
+      setAuthFailed(true);
+    };
     window.navermap_authFailure = handleAuthFailure;
 
     const init = () => {
@@ -120,6 +152,7 @@ export function NaverMap({
           },
         });
       } catch {
+        writeAuthFailFlag();
         setAuthFailed(true);
       }
     };
@@ -144,7 +177,10 @@ export function NaverMap({
         script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
         script.async = true;
         script.onload = init;
-        script.onerror = () => setAuthFailed(true);
+        script.onerror = () => {
+          writeAuthFailFlag();
+          setAuthFailed(true);
+        };
         document.head.appendChild(script);
       }
     }
@@ -158,7 +194,7 @@ export function NaverMap({
         delete window.navermap_authFailure;
       }
     };
-  }, [clientId, lat, lng, zoom, markerLabel]);
+  }, [clientId, lat, lng, zoom, markerLabel, authFailed]);
 
   const wrapperClass = className ?? "block h-[360px] w-full sm:h-[420px]";
 
