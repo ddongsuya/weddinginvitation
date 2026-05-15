@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Claude tooling (local-only)
 .claude/
+
+# Original/source photo dump — only the optimized copies in public/photos/ ship
+/kkk/

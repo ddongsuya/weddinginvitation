@@ -1,6 +1,6 @@
 // 갤러리 사진 개수 — 늘리거나 줄이고 싶으면 이 숫자만 바꾸세요.
 // 파일명 규칙: 01.jpg, 02.jpg, ... 두 자리 숫자 + .jpg 통일.
-const GALLERY_COUNT = 29;
+const GALLERY_COUNT = 34;
 
 export const weddingData = {
   groom: {

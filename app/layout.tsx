@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/photos/main01.jpg",
+        url: "/photos/og-thumbnail.jpg",
         width: 1080,
-        height: 1920,
+        height: 1080,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",
       },
     ],

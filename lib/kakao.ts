@@ -85,7 +85,9 @@ export async function shareInvitation(): Promise<void> {
     const kakao = await loadKakaoSdk();
     const siteUrl = resolveSiteUrl();
     const targetUrl = `${siteUrl}/`;
-    const imageUrl = `${siteUrl}${weddingData.slides[0].src}`;
+    // Use 1:1 thumbnail (1080x1080) — KakaoTalk previews render square images
+    // cleanly without cropping. Falls back to first hero slide if missing.
+    const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg`;
     const calendarUrl = buildCalendarUrl();
 
     kakao.Share.sendDefault({
