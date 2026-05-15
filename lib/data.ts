@@ -49,8 +49,8 @@ export const weddingData = {
     tel: "061-680-3012",
     parking: "건물 지상, 지하 주차 가능",
     transit: "자차 또는 택시 이용 권장드립니다.",
-    // 히든베이 호텔 (전라남도 여수시 신월로 496-25) — OpenStreetMap Nominatim 검증 좌표
-    coordinates: { lat: 34.7329029, lng: 127.6865444 },
+    // 히든베이 호텔 (전라남도 여수시 신월로 496-25) — 사용자 직접 확인 좌표
+    coordinates: { lat: 34.72163, lng: 127.6996 },
   },
   gallery: Array.from({ length: GALLERY_COUNT }, (_, i) => ({
     src: `/photos/${String(i + 1).padStart(2, "0")}.jpg`,
