@@ -32,8 +32,7 @@ export function NavShell({ children }: { children: React.ReactNode }) {
           >
             <Link
               href="/"
-              className="pointer-events-auto font-serif text-sm tracking-wide text-white transition-opacity hover:opacity-70 sm:text-base"
-              style={{ mixBlendMode: "difference" }}
+              className="pointer-events-auto font-serif text-sm tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] transition-opacity hover:opacity-70 sm:text-base"
             >
               {weddingData.groom.name} &nbsp;&amp;&nbsp;{" "}
               {weddingData.bride.name}
@@ -44,7 +43,7 @@ export function NavShell({ children }: { children: React.ReactNode }) {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.94 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
-              className="pointer-events-auto group flex items-center gap-2.5 rounded-full border border-white/25 bg-black/40 px-4 py-2.5 font-sans text-xs text-white backdrop-blur-md transition-colors hover:bg-black/60 sm:text-sm"
+              className="pointer-events-auto group flex items-center gap-2.5 rounded-full border border-white/25 bg-stone-900/85 px-4 py-2.5 font-sans text-xs text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-stone-900 sm:text-sm"
               aria-label="메뉴 열기"
             >
               <span className="flex flex-col gap-[3px]">

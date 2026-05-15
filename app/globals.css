@@ -27,10 +27,20 @@ body {
   touch-action: pan-y;
 }
 
-/* Keep .h-screen at a fixed 100vh — do NOT use dvh: dvh changes as the
-   iOS address bar collapses, which makes hero images resize during scroll
-   and stutter. Static 100vh trades a tiny initial overflow for rock-solid,
-   non-resizing hero sections. */
+/* Use 100svh (small viewport height) where supported.
+   - vh / lvh = viewport WITHOUT browser chrome → hero overflows when
+     address bar is visible; later when address bar hides, the previously-
+     overflowed bottom reveals itself, which the user perceives as the
+     image "enlarging" during scroll.
+   - dvh = dynamic, resizes with chrome → causes the hero to literally
+     change size every scroll frame (worst case).
+   - svh = STATIC value tied to the smallest viewport (chrome visible) →
+     hero is always ≤ visible area, never overflows, never resizes. */
+@supports (height: 100svh) {
+  .h-screen {
+    height: 100svh;
+  }
+}
 
 /* Keyboard focus indicator — replaces removed default outline */
 :focus {

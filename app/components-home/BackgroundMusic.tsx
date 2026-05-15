@@ -96,7 +96,7 @@ export function BackgroundMusic() {
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             transition={{ type: "spring", stiffness: 380, damping: 18 }}
-            className="pointer-events-auto relative grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-stone-900/60 text-white backdrop-blur-md sm:h-12 sm:w-12"
+            className="pointer-events-auto relative grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-stone-900/85 text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] sm:h-12 sm:w-12"
             aria-label={playing ? "음악 끄기" : "음악 켜기"}
             aria-pressed={playing}
           >
