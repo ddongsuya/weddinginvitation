@@ -46,7 +46,10 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/photos/og-thumbnail.jpg",
+        // ?v= cache-bust so Facebook/Twitter/Slack/etc. re-fetch the OG
+        // preview the next time someone shares a link. Bump on thumbnail
+        // updates; keep in lockstep with lib/kakao.ts.
+        url: "/photos/og-thumbnail.jpg?v=2",
         width: 1080,
         height: 1080,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",

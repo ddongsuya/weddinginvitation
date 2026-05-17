@@ -100,14 +100,14 @@ export default function GalleryPage() {
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    className="group relative aspect-[3/4] overflow-hidden bg-stone-100"
+                    className="group relative aspect-[9/16] overflow-hidden bg-stone-100"
                     aria-label={`${absoluteIndex + 1}번째 사진 보기`}
                   >
                     <Image
                       src={photo.src}
                       alt={photo.alt}
                       fill
-                      sizes="33vw"
+                      sizes="(min-width: 640px) 33vw, 33vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       loading={i < 6 ? "eager" : "lazy"}
                     />

@@ -86,8 +86,10 @@ export async function shareInvitation(): Promise<void> {
     const siteUrl = resolveSiteUrl();
     const targetUrl = `${siteUrl}/`;
     // Use 1:1 thumbnail (1080x1080) — KakaoTalk previews render square images
-    // cleanly without cropping. Falls back to first hero slide if missing.
-    const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg`;
+    // cleanly without cropping. The ?v= cache-bust forces Kakao's CDN to
+    // re-fetch when the underlying file is updated; bump the number when
+    // og-thumbnail.jpg changes.
+    const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg?v=2`;
     const calendarUrl = buildCalendarUrl();
 
     // Format the date as the spec asks: 2026.08.29 (토) 12:30 여수히든베이호텔
