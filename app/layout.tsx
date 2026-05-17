@@ -62,11 +62,11 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        // 1080×1920 portrait — see scripts/build-og-thumbnail.mjs. The
-        // tall canvas is what keeps KakaoTalk from cropping the 1:1
-        // design that sits in the middle. Bump the ?v= alongside
-        // lib/kakao.ts whenever the underlying file changes.
-        url: "/photos/og-thumbnail.jpg?v=4",
+        // 1080×1920 portrait — see scripts/build-og-thumbnail.mjs.
+        // Renamed from og-thumbnail.jpg to share-thumbnail.jpg so
+        // KakaoTalk's URL-keyed CDN cache can't serve the previous
+        // square crop. Keep filename in lockstep with lib/kakao.ts.
+        url: "/photos/share-thumbnail.jpg",
         width: 1080,
         height: 1920,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",

@@ -6,8 +6,8 @@
 // (tall) preview that doesn't crop anything, we pad the square design
 // onto a portrait 9:16 canvas with a neutral cream background.
 //
-// Input:  public/photos/og-thumbnail.jpg  (1080×1080, the master 1:1)
-// Output: public/photos/og-thumbnail.jpg  (1080×1920, padded portrait)
+// Input:  kkk/.../썸네일_1080x1080.jpg     (1080×1080, the master 1:1)
+// Output: public/photos/share-thumbnail.jpg (1080×1920, padded portrait)
 //
 // Run with: node scripts/build-og-thumbnail.mjs
 // (Idempotent — running again pads from whatever the current file is,
@@ -27,7 +27,7 @@ const SRC_MASTER = path.join(
   "0 썸네일 1대1",
   "썸네일_1080x1080.jpg"
 );
-const OUT = path.join(ROOT, "public", "photos", "og-thumbnail.jpg");
+const OUT = path.join(ROOT, "public", "photos", "share-thumbnail.jpg");
 // Page background `#f4ede4` (the cream the rest of the site uses)
 const BG = { r: 244, g: 237, b: 228, alpha: 1 };
 // Target canvas — 9:16 portrait so Kakao renders the "long" preview.
