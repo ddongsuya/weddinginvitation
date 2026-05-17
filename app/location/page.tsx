@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SubpageHero } from "../components-home/SubpageHero";
 import { SubpageNav } from "../components-home/SubpageNav";
@@ -93,7 +93,30 @@ export default function LocationPage() {
             </motion.p>
           </div>
 
-          {/* 2. 지도 */}
+          {/* 2. 정보 블록 — 주소 / 전화번호 / 주차장 안내 */}
+          <motion.dl
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mx-auto mt-12 max-w-xl space-y-5 sm:mt-16"
+          >
+            <InfoRow label="주소" value={venue.address} />
+            <InfoRow
+              label="전화번호"
+              value={
+                <a
+                  href={`tel:${telDigits}`}
+                  className="underline decoration-stone-300 decoration-1 underline-offset-4 transition-colors hover:decoration-accent hover:text-accent"
+                >
+                  {venue.tel}
+                </a>
+              }
+            />
+            <InfoRow label="주차장 안내" value={venue.parking} />
+          </motion.dl>
+
+          {/* 3. 지도 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -108,44 +131,6 @@ export default function LocationPage() {
               markerLabel={venue.name}
             />
           </motion.div>
-
-          {/* 3. 주소 + 전화번호 (지도 아래) */}
-          <div className="mt-10 text-center sm:mt-12">
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-[17px] leading-[1.7] tracking-[-0.01em] text-foreground sm:text-lg"
-            >
-              {venue.address}
-            </motion.p>
-            <motion.a
-              href={`tel:${telDigits}`}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-5 py-2.5 text-sm text-foreground transition-colors hover:border-accent/40 hover:text-accent sm:text-base"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              <span className="tracking-wide">{venue.tel}</span>
-            </motion.a>
-          </div>
         </div>
       </section>
 
@@ -207,34 +192,29 @@ export default function LocationPage() {
         </motion.div>
       </section>
 
-      <section className="border-t border-stone-200/70 px-6 py-20 sm:px-10 sm:py-28">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="mx-auto grid max-w-3xl gap-10 sm:grid-cols-3 sm:gap-8"
-        >
-          <Detail label="교통편" body={venue.transit} />
-          <Detail label="주차" body={venue.parking} />
-          <Detail label="안내" body={venue.addressDetail} />
-        </motion.div>
-      </section>
-
       <SubpageNav currentHref="/location" />
     </main>
   );
 }
 
-function Detail({ label, body }: { label: string; body: string }) {
+// Definition-list style row used for the 주소 / 전화번호 / 주차장 안내 block.
+// Label sits left in muted serif; value flows right. On narrow screens the
+// pair stacks so long Korean addresses don't get squashed.
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) {
   return (
-    <div>
-      <p className="font-serif text-base tracking-[0.1em] text-accent sm:text-lg">
+    <div className="grid grid-cols-[5.5rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-stone-200/70 pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[6.5rem_1fr]">
+      <dt className="font-serif text-[13px] tracking-[0.15em] text-accent sm:text-sm">
         {label}
-      </p>
-      <p className="mt-4 text-[15px] leading-[1.85] tracking-[-0.01em] text-foreground/85 sm:text-base">
-        {body}
-      </p>
+      </dt>
+      <dd className="text-[15px] leading-[1.75] tracking-[-0.005em] text-foreground sm:text-base">
+        {value}
+      </dd>
     </div>
   );
 }

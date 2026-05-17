@@ -93,9 +93,26 @@ const SLIDES: Slide[] = [
   },
 ];
 
+// Pixel-lock the hero viewport on mount so iOS Safari's address-bar
+// animation (which silently mutates vh / dvh / svh during scroll) can't
+// resize the section. The section becomes a static N-pixel-tall box; no
+// viewport unit ever recalculates afterward, so the photo never rescales.
+function useStableViewportHeight() {
+  const [h, setH] = useState<string>("100svh");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const innerH = window.innerHeight;
+    const visualH = window.visualViewport?.height;
+    const px = visualH ? Math.min(innerH, visualH) : innerH;
+    setH(`${px}px`);
+  }, []);
+  return h;
+}
+
 export function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
   const pausedRef = useRef(false);
+  const heroHeight = useStableViewportHeight();
 
   const goNext = useCallback(() => {
     setCurrent((c) => (c + 1) % SLIDES.length);
@@ -132,19 +149,17 @@ export function HeroSlideshow() {
 
   return (
     <section
-      className="relative h-screen w-full overflow-hidden"
+      className="relative w-full overflow-hidden"
+      style={{ height: heroHeight }}
       aria-label="히어로 슬라이드"
     >
       <AnimatePresence>
         <motion.div
           key={`photo-${current}`}
-          initial={{ opacity: 0, scale: 1.0 }}
-          animate={{ opacity: 1, scale: 1.04 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{
-            opacity: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
-            scale: { duration: SLIDE_MS / 1000 + 1.2, ease: "linear" },
-          }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0"
         >
           <Image

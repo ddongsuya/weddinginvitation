@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { SplitText } from "./SplitText";
@@ -14,9 +14,28 @@ interface SubpageHeroProps {
 
 export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
   const [loaded, setLoaded] = useState(false);
+  // Pixel-lock the section height on mount. Even with the globals.css
+  // svh override, iOS Safari subtly re-measures the viewport while the
+  // address bar collapses, which forces `object-cover` on the photo to
+  // rescale frame-by-frame — that's what was reading as "the image
+  // enlarges while I scroll." Capturing window.innerHeight once and
+  // pinning the section to that px value decouples us from the viewport
+  // entirely; the photo container is a static box from first paint on.
+  const [heroHeight, setHeroHeight] = useState<string>("100svh");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const innerH = window.innerHeight;
+    const visualH = window.visualViewport?.height;
+    const px = visualH ? Math.min(innerH, visualH) : innerH;
+    setHeroHeight(`${px}px`);
+  }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section
+      className="relative w-full overflow-hidden"
+      style={{ height: heroHeight }}
+    >
       {/* Static photo layer — plain div with CSS opacity transition (NO
           framer-motion). Promoted to its own compositor layer via
           translateZ so scrolling never repaints. Zero transforms /
