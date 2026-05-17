@@ -62,13 +62,13 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        // 1080×1920 portrait — see scripts/build-og-thumbnail.mjs.
-        // Renamed from og-thumbnail.jpg to share-thumbnail.jpg so
-        // KakaoTalk's URL-keyed CDN cache can't serve the previous
-        // square crop. Keep filename in lockstep with lib/kakao.ts.
-        url: "/photos/share-thumbnail.jpg",
-        width: 1080,
-        height: 1920,
+        // 1200×630 landscape — see scripts/build-og-thumbnail.mjs.
+        // Matches Kakao/FB/Twitter card aspect so no cropping happens
+        // in any link-preview slot. Keep filename in lockstep with
+        // lib/kakao.ts (the build script writes here too).
+        url: "/photos/share-card.jpg",
+        width: 1200,
+        height: 630,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",
       },
     ],
