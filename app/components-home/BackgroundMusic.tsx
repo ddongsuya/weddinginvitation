@@ -45,23 +45,42 @@ export function BackgroundMusic() {
     };
   }, []);
 
-  // Watch the subpage's bottom nav (data-bottom-nav). When it enters the
-  // viewport, fade the music button out so it never covers the prev/next
-  // menu links. Re-runs on pathname change because the nav element is
-  // recreated on each route.
+  // Watch the subpage's bottom nav (data-bottom-nav). When it enters — or
+  // is even *about* to enter — the viewport, fade the music button out so
+  // it never sits on top of the "이전 · 다음" links.
+  //
+  // The rootMargin is intentionally aggressive: +240px on the bottom
+  // means we consider the nav "visible" while it's still 240 px BELOW
+  // the actual viewport bottom. That gives the fade-out time to finish
+  // before the prev link physically appears on screen, so the user
+  // never sees the music button covering it. The nav has to clear that
+  // 240 px buffer above the viewport bottom for the button to come back.
+  //
+  // Re-runs on pathname change because the nav element is recreated per
+  // route (and a freshly-mounted hero is well above the threshold).
   useEffect(() => {
     if (typeof window === "undefined") return;
     setBottomNavVisible(false);
-    const el = document.querySelector("[data-bottom-nav]");
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) setBottomNavVisible(entry.isIntersecting);
-      },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.01 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    // Wait one frame so the new route's DOM (and its [data-bottom-nav])
+    // is committed before we try to observe it.
+    const raf = requestAnimationFrame(() => {
+      const el = document.querySelector("[data-bottom-nav]");
+      if (!el) return;
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries)
+            setBottomNavVisible(entry.isIntersecting);
+        },
+        { rootMargin: "0px 0px 240px 0px", threshold: 0 }
+      );
+      io.observe(el);
+      cleanup = () => io.disconnect();
+    });
+    let cleanup: (() => void) | undefined;
+    return () => {
+      cancelAnimationFrame(raf);
+      if (cleanup) cleanup();
+    };
   }, [pathname]);
 
   const toggle = () => {
@@ -93,7 +112,7 @@ export function BackgroundMusic() {
           y: bottomNavVisible ? 24 : 0,
           scale: bottomNavVisible ? 0.85 : 1,
         }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         style={{
           bottom:
             "max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem))",

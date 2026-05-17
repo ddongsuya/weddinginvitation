@@ -13,6 +13,8 @@ export default function GalleryPage() {
   const [active, setActive] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
+  // Direction of last page change (for slide-in animation between grid pages)
+  const [pageDir, setPageDir] = useState<1 | -1>(1);
 
   const total = weddingData.gallery.length;
   const pageCount = Math.ceil(total / PAGE_SIZE);
@@ -27,6 +29,22 @@ export default function GalleryPage() {
   const goPrev = () => {
     setDirection(-1);
     setActive((a) => (a !== null ? (a - 1 + total) % total : a));
+  };
+
+  // Grid pagination — used by both the dots/arrows and the swipe gesture.
+  const goNextPage = () => {
+    setPage((p) => {
+      if (p >= pageCount - 1) return p;
+      setPageDir(1);
+      return p + 1;
+    });
+  };
+  const goPrevPage = () => {
+    setPage((p) => {
+      if (p <= 0) return p;
+      setPageDir(-1);
+      return p - 1;
+    });
   };
 
   // Keyboard navigation when lightbox is open
@@ -49,6 +67,27 @@ export default function GalleryPage() {
     document.documentElement.style.overflow = "hidden";
     return () => {
       document.documentElement.style.overflow = prev;
+    };
+  }, [active]);
+
+  // Hijack the browser back button while the lightbox is open. Pushing a
+  // synthetic history entry on open means the user's first "back" pops that
+  // entry instead of leaving the gallery page — popstate then closes the
+  // lightbox. When the user closes via UI (X button / swipe / escape), the
+  // cleanup pops the entry too so we don't leave junk in history.
+  useEffect(() => {
+    if (active === null) return;
+    if (typeof window === "undefined") return;
+    window.history.pushState({ lightbox: true }, "");
+    const onPop = () => setActive(null);
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      // If our pushed entry is still on top of the stack, pop it now so the
+      // browser back button doesn't fire popstate with no effect later.
+      if (window.history.state && window.history.state.lightbox) {
+        window.history.back();
+      }
     };
   }, [active]);
 
@@ -77,51 +116,76 @@ export default function GalleryPage() {
             </p>
           </motion.div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={page}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mt-12 grid grid-cols-3 gap-2 sm:mt-16 sm:gap-4"
-            >
-              {visible.map((photo, i) => {
-                const absoluteIndex = start + i;
-                return (
-                  <motion.button
-                    key={absoluteIndex}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: i * 0.04 }}
-                    onClick={() => {
-                      setDirection(1);
-                      setActive(absoluteIndex);
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="group relative aspect-[9/16] overflow-hidden bg-stone-100"
-                    aria-label={`${absoluteIndex + 1}번째 사진 보기`}
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="(min-width: 640px) 33vw, 33vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading={i < 6 ? "eager" : "lazy"}
-                    />
-                  </motion.button>
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+          {/* Swipe-paginated grid. The outer motion.div captures horizontal
+              drag (touch-action: pan-y keeps vertical scroll working). The
+              inner AnimatePresence slides the page in from the dragged
+              direction so the gesture feels physical. */}
+          <motion.div
+            className="mt-12 sm:mt-16"
+            drag={pageCount > 1 ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            dragSnapToOrigin
+            onDragEnd={(_, info) => {
+              const swipe = Math.abs(info.offset.x) * info.velocity.x;
+              if (info.offset.x < -80 || swipe < -10000) goNextPage();
+              else if (info.offset.x > 80 || swipe > 10000) goPrevPage();
+            }}
+            style={{ touchAction: "pan-y" }}
+          >
+            <AnimatePresence mode="wait" custom={pageDir}>
+              <motion.div
+                key={page}
+                custom={pageDir}
+                variants={{
+                  enter: (d: number) => ({ opacity: 0, x: d * 48 }),
+                  center: { opacity: 1, x: 0 },
+                  leave: (d: number) => ({ opacity: 0, x: d * -48 }),
+                }}
+                initial="enter"
+                animate="center"
+                exit="leave"
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="grid grid-cols-3 gap-2 sm:gap-4"
+              >
+                {visible.map((photo, i) => {
+                  const absoluteIndex = start + i;
+                  return (
+                    <motion.button
+                      key={absoluteIndex}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: i * 0.04 }}
+                      onClick={() => {
+                        setDirection(1);
+                        setActive(absoluteIndex);
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="group relative aspect-[9/16] overflow-hidden bg-stone-100"
+                      aria-label={`${absoluteIndex + 1}번째 사진 보기`}
+                    >
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        sizes="(min-width: 640px) 33vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading={i < 6 ? "eager" : "lazy"}
+                        draggable={false}
+                      />
+                    </motion.button>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
           {pageCount > 1 && (
             <div className="mt-12 flex flex-col items-center gap-4 sm:mt-16">
               <div className="flex items-center gap-3">
                 <motion.button
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  onClick={goPrevPage}
                   disabled={page === 0}
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.92 }}
@@ -136,7 +200,10 @@ export default function GalleryPage() {
                   {Array.from({ length: pageCount }).map((_, i) => (
                     <motion.button
                       key={i}
-                      onClick={() => setPage(i)}
+                      onClick={() => {
+                        setPageDir(i > page ? 1 : -1);
+                        setPage(i);
+                      }}
                       whileHover={{ scaleY: 1.4 }}
                       whileTap={{ scaleY: 0.7 }}
                       transition={{ type: "spring", stiffness: 380, damping: 18 }}
@@ -151,9 +218,7 @@ export default function GalleryPage() {
                   ))}
                 </div>
                 <motion.button
-                  onClick={() =>
-                    setPage((p) => Math.min(pageCount - 1, p + 1))
-                  }
+                  onClick={goNextPage}
                   disabled={page === pageCount - 1}
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.92 }}
@@ -356,13 +421,36 @@ export default function GalleryPage() {
                   animate="center"
                   exit="leave"
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.18}
+                  drag
+                  dragConstraints={{
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                  }}
+                  dragElastic={0.22}
+                  dragSnapToOrigin
                   onDragEnd={(_, info) => {
-                    const swipe = Math.abs(info.offset.x) * info.velocity.x;
-                    if (info.offset.x < -80 || swipe < -10000) goNext();
-                    else if (info.offset.x > 80 || swipe > 10000) goPrev();
+                    const { offset, velocity } = info;
+                    const swipeX = Math.abs(offset.x) * velocity.x;
+                    const swipeY = Math.abs(offset.y) * velocity.y;
+                    const verticalDominant =
+                      Math.abs(offset.y) > Math.abs(offset.x);
+
+                    // Vertical (up or down) → close. Same threshold either way
+                    // because the user's intent is "dismiss this overlay."
+                    if (
+                      verticalDominant &&
+                      (Math.abs(offset.y) > 110 ||
+                        Math.abs(swipeY) > 10000)
+                    ) {
+                      close();
+                      return;
+                    }
+
+                    // Horizontal → navigate
+                    if (offset.x < -80 || swipeX < -10000) goNext();
+                    else if (offset.x > 80 || swipeX > 10000) goPrev();
                   }}
                   className="absolute inset-0 flex items-center justify-center px-4 sm:px-12"
                   style={{ touchAction: "none" }}
