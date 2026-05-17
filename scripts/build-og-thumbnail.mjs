@@ -1,21 +1,23 @@
 // scripts/build-og-thumbnail.mjs
 //
-// KakaoTalk's chat link-preview card has a FIXED landscape image area
-// (≈1.91:1, same as Facebook/Twitter card). It scales any image to
-// cover that slot and crops whatever doesn't fit. So:
-//   - 1:1 thumbnail   → top + bottom chopped off
-//   - 9:16 portrait   → top + bottom chopped off (~48% of height lost)
-//   - 1.91:1 landscape → NO crop, shown in full
+// KakaoTalk's chat preview slot is a fixed 1.91:1 landscape and crops
+// any image that doesn't match. A 1:1 design can't physically fill
+// that slot without losing pixels — geometric fact. We've tried:
+//   - Bare 1:1 file → Kakao crops top + bottom
+//   - 9:16 portrait + cream pad → Kakao crops ~48% of height
+//   - 1.91:1 + cream side bars → no crop, but cream "empty" sides
+//     look like the photo is missing chunks to the user
 //
-// Strategy: composite the user's 1:1 master onto a 1200×630 landscape
-// canvas. The 1:1 is scaled to fit the canvas height (630×630) and
-// centered horizontally; cream bars sit to its left and right. Kakao
-// gets an image at the exact aspect ratio its slot expects, so it
-// renders without cropping and every pixel of the user's design is
-// visible in the preview.
+// Final strategy (industry standard, same as Instagram/FB feed for
+// portrait photos): make the canvas 1.91:1 (so Kakao does no crop)
+// and fill the side margins with a blurred, slightly-darkened copy
+// of the master image itself. From the viewer's eye the sharp 1:1
+// design sits at the center and the photo's own colors extend
+// naturally to the canvas edges — there are no "blank" cream bars
+// and nothing has been cropped.
 //
-// Input:  kkk/.../썸네일_1080x1080.jpg     (1080×1080, the master 1:1)
-// Output: public/photos/share-card.jpg (1200×630 landscape)
+// Input:  kkk/.../썸네일_1080x1080.jpg  (1080×1080, the master 1:1)
+// Output: public/photos/share-card-v2.jpg (1200×630 landscape)
 //
 // Run with: node scripts/build-og-thumbnail.mjs
 
@@ -31,44 +33,44 @@ const SRC_MASTER = path.join(
   "0 썸네일 1대1",
   "썸네일_1080x1080.jpg"
 );
-const OUT = path.join(ROOT, "public", "photos", "share-card.jpg");
+const OUT = path.join(ROOT, "public", "photos", "share-card-v2.jpg");
 
-// Page background `#f4ede4` (the cream the rest of the site uses) so
-// the side bars blend into the wedding card's overall palette.
-const BG = { r: 244, g: 237, b: 228, alpha: 1 };
-
-// Canvas: Facebook/Kakao standard 1.91:1 landscape OG size. Kakao's
-// preview slot fits this ratio exactly so the image renders edge-to-
-// edge with no center-crop.
+// 1.91:1 Facebook/Kakao OG standard. Kakao's preview slot is the
+// same aspect, so renders edge-to-edge with no center-crop.
 const CANVAS_W = 1200;
 const CANVAS_H = 630;
-// 1:1 design height = canvas height → 630×630 square in the middle.
+// Sharp 1:1 in the middle, height-matched to canvas.
 const DESIGN_SIZE = CANVAS_H;
 
 async function main() {
   if (!existsSync(SRC_MASTER)) {
     throw new Error(`Master thumbnail not found at ${SRC_MASTER}`);
   }
-  const square = await sharp(SRC_MASTER)
+
+  // 1. Blurred background — the master scaled to cover the full
+  //    1200×630, heavily blurred, and dimmed slightly so the sharp
+  //    foreground stands out.
+  const blurredBg = await sharp(SRC_MASTER)
+    .resize(CANVAS_W, CANVAS_H, { fit: "cover", position: "center" })
+    .blur(40)
+    .modulate({ brightness: 0.78, saturation: 0.85 })
+    .toBuffer();
+
+  // 2. Sharp foreground — the master at canvas height (630×630),
+  //    placed centered on top of the blurred background.
+  const foreground = await sharp(SRC_MASTER)
     .resize(DESIGN_SIZE, DESIGN_SIZE)
     .toBuffer();
-  const padLeft = Math.floor((CANVAS_W - DESIGN_SIZE) / 2);
-  const padRight = CANVAS_W - DESIGN_SIZE - padLeft;
 
-  await sharp({
-    create: {
-      width: CANVAS_W,
-      height: CANVAS_H,
-      channels: 3,
-      background: BG,
-    },
-  })
-    .composite([{ input: square, top: 0, left: padLeft }])
+  const padLeft = Math.floor((CANVAS_W - DESIGN_SIZE) / 2);
+
+  await sharp(blurredBg)
+    .composite([{ input: foreground, top: 0, left: padLeft }])
     .jpeg({ quality: 92, mozjpeg: true })
     .toFile(OUT);
 
   console.log(
-    `✓ Wrote ${OUT}\n  ${CANVAS_W}×${CANVAS_H} landscape, 1:1 design centered, ${padLeft}px / ${padRight}px side padding.`
+    `✓ Wrote ${OUT}\n  ${CANVAS_W}×${CANVAS_H} landscape, sharp 1:1 design centered, side margins filled with a blur-extended dim copy of the master.`
   );
 }
 

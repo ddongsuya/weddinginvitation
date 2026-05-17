@@ -66,7 +66,7 @@ export const metadata: Metadata = {
         // Matches Kakao/FB/Twitter card aspect so no cropping happens
         // in any link-preview slot. Keep filename in lockstep with
         // lib/kakao.ts (the build script writes here too).
-        url: "/photos/share-card.jpg",
+        url: "/photos/share-card-v2.jpg",
         width: 1200,
         height: 630,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",

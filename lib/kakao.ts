@@ -93,7 +93,7 @@ export async function shareInvitation(): Promise<void> {
     // means KakaoTalk renders the image edge-to-edge with no crop.
     // The user's 1:1 design sits 630×630 in the middle, cream
     // 285px-wide bars on either side blending into the page palette.
-    const imageUrl = `${siteUrl}/photos/share-card.jpg`;
+    const imageUrl = `${siteUrl}/photos/share-card-v2.jpg`;
     const calendarUrl = buildCalendarUrl();
 
     // Format the date as the spec asks: 2026.08.29 (토) 12:30 여수히든베이호텔
