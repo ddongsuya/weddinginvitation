@@ -193,11 +193,8 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
             }}
           >
-            <p className="font-serif text-[13px] tracking-[0.2em] text-white/70 sm:text-sm">
-              2026 . 08 . 29
-            </p>
-            <p className="hidden font-serif text-[13px] tracking-[0.15em] text-white/70 sm:block sm:text-sm">
-              {weddingData.venue.name}
+            <p className="font-serif text-[13px] tracking-[0.12em] text-white/70 sm:text-sm">
+              2026.08.29 (토) 히든베이호텔
             </p>
           </footer>
         </motion.div>

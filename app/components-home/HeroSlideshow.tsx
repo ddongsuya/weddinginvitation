@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { weddingData } from "@/lib/data";
 import { SplitText } from "./SplitText";
+import { useStableHeroHeight } from "./useStableHeroHeight";
 
 interface Slide {
   src: string;
@@ -31,17 +32,17 @@ const SLIDES: Slide[] = [
   {
     src: weddingData.slides[1].src,
     render: (key) => (
-      <div className="flex items-baseline justify-center gap-2 font-hand font-normal leading-[1] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:gap-4">
+      <div className="font-hand font-normal leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
         <SplitText
           animationKey={`g-${key}`}
           text={weddingData.groom.name}
-          as="span"
+          as="p"
           variant="blur"
           staggerChildren={0.07}
           delay={0.1}
-          className="text-[clamp(2.4rem,9vw,8rem)]"
+          className="text-[clamp(5rem,22vw,17rem)]"
         />
-        <motion.span
+        <motion.p
           key={`amp-${key}`}
           initial={{ opacity: 0, scale: 0.4, rotate: -45 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -50,18 +51,18 @@ const SLIDES: Slide[] = [
             delay: 0.55,
             ease: [0.34, 1.56, 0.64, 1],
           }}
-          className="inline-block text-[clamp(1.6rem,6vw,5rem)] text-white/85"
+          className="my-2 text-[clamp(3rem,13vw,10rem)] text-white/85 sm:my-3"
         >
           &amp;
-        </motion.span>
+        </motion.p>
         <SplitText
           animationKey={`b-${key}`}
           text={weddingData.bride.name}
-          as="span"
+          as="p"
           variant="blur"
           staggerChildren={0.07}
           delay={0.85}
-          className="text-[clamp(2.4rem,9vw,8rem)]"
+          className="text-[clamp(5rem,22vw,17rem)]"
         />
       </div>
     ),
@@ -69,50 +70,39 @@ const SLIDES: Slide[] = [
   {
     src: weddingData.slides[2].src,
     render: (key) => (
-      <div className="font-hand font-normal leading-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+      <div className="font-hand font-normal leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+        {/* Date split into two short lines so each can run at slide 1's
+            big size. Original "2026년 08월 29일 / 토요일 낮 12:30" was
+            10 + 8 chars per line — too long to fit the unified clamp
+            without wrapping into 3-4 stacks on mobile. */}
         <SplitText
           animationKey={`d1-${key}`}
-          text="2026년 08월 29일"
+          text="8월 29일"
           as="p"
           variant="wave"
-          staggerChildren={0.05}
+          staggerChildren={0.06}
           delay={0.1}
-          className="text-[clamp(1.6rem,5.5vw,4rem)]"
+          className="text-[clamp(5rem,22vw,17rem)]"
         />
         <SplitText
           animationKey={`d2-${key}`}
-          text="토요일 낮 12:30"
+          text="낮 12:30"
           as="p"
           variant="wave"
-          staggerChildren={0.05}
+          staggerChildren={0.06}
           delay={0.55}
-          className="mt-4 text-[clamp(1.4rem,5vw,3.6rem)] text-white/95 sm:mt-6"
+          className="mt-3 text-[clamp(5rem,22vw,17rem)] text-white/95 sm:mt-5"
         />
       </div>
     ),
   },
 ];
 
-// Pixel-lock the hero viewport on mount so iOS Safari's address-bar
-// animation (which silently mutates vh / dvh / svh during scroll) can't
-// resize the section. The section becomes a static N-pixel-tall box; no
-// viewport unit ever recalculates afterward, so the photo never rescales.
-function useStableViewportHeight() {
-  const [h, setH] = useState<string>("100svh");
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const innerH = window.innerHeight;
-    const visualH = window.visualViewport?.height;
-    const px = visualH ? Math.min(innerH, visualH) : innerH;
-    setH(`${px}px`);
-  }, []);
-  return h;
-}
-
 export function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
   const pausedRef = useRef(false);
-  const heroHeight = useStableViewportHeight();
+  // Shared with SubpageHero — see useStableHeroHeight.
+  const heroHeight = useStableHeroHeight();
 
   const goNext = useCallback(() => {
     setCurrent((c) => (c + 1) % SLIDES.length);
