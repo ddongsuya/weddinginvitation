@@ -31,17 +31,17 @@ const SLIDES: Slide[] = [
   {
     src: weddingData.slides[1].src,
     render: (key) => (
-      <div className="font-hand font-normal leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+      <div className="flex items-baseline justify-center gap-2 font-hand font-normal leading-[1] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:gap-4">
         <SplitText
           animationKey={`g-${key}`}
           text={weddingData.groom.name}
-          as="p"
+          as="span"
           variant="blur"
           staggerChildren={0.07}
           delay={0.1}
-          className="text-[clamp(3.5rem,12vw,9rem)]"
+          className="text-[clamp(2.4rem,9vw,8rem)]"
         />
-        <motion.p
+        <motion.span
           key={`amp-${key}`}
           initial={{ opacity: 0, scale: 0.4, rotate: -45 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -50,18 +50,18 @@ const SLIDES: Slide[] = [
             delay: 0.55,
             ease: [0.34, 1.56, 0.64, 1],
           }}
-          className="my-3 text-[clamp(2rem,7vw,5rem)] text-white/85 sm:my-5"
+          className="inline-block text-[clamp(1.6rem,6vw,5rem)] text-white/85"
         >
           &amp;
-        </motion.p>
+        </motion.span>
         <SplitText
           animationKey={`b-${key}`}
           text={weddingData.bride.name}
-          as="p"
+          as="span"
           variant="blur"
           staggerChildren={0.07}
           delay={0.85}
-          className="text-[clamp(3.5rem,12vw,9rem)]"
+          className="text-[clamp(2.4rem,9vw,8rem)]"
         />
       </div>
     ),
