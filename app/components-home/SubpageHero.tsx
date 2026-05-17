@@ -52,7 +52,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
         >
           {num}
         </motion.p>
-        <h1 className="mt-4 font-serif text-[clamp(3rem,9vw,7rem)] font-normal leading-[0.95] tracking-[-0.03em] sm:mt-6">
+        <h1 className="mt-4 font-hand text-[clamp(3rem,9vw,7rem)] font-normal leading-[0.95] tracking-[-0.03em] sm:mt-6">
           <SplitText
             text={label}
             variant="rise"

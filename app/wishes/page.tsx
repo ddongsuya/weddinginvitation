@@ -32,7 +32,7 @@ export default function WishesPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="font-serif text-[clamp(1.9rem,5.2vw,3.1rem)] font-normal leading-[1.2] tracking-[-0.025em] text-foreground"
+            className="font-hand text-[clamp(2rem,5.4vw,3.2rem)] font-normal leading-[1.2] tracking-[-0.025em] text-foreground"
           >
             마음 전하실 곳
           </motion.h2>

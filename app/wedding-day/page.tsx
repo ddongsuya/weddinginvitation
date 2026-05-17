@@ -71,7 +71,7 @@ export default function WeddingDayPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 1, delay: 0.15 }}
-            className="font-serif"
+            className="font-hand"
           >
             <div className="text-[17px] tracking-[0.04em] text-muted sm:text-lg">
               2026년 8월
@@ -190,7 +190,7 @@ export default function WeddingDayPage() {
               { label: "초", value: countdown.seconds },
             ].map((it) => (
               <div key={it.label}>
-                <div className="font-serif text-[clamp(1.9rem,6.4vw,3.6rem)] font-normal leading-none text-foreground tabular-nums">
+                <div className="font-hand text-[clamp(1.9rem,6.4vw,3.6rem)] font-normal leading-none text-foreground tabular-nums">
                   {String(it.value).padStart(2, "0")}
                 </div>
                 <div className="mt-2 font-serif text-[13px] tracking-[0.1em] text-muted sm:text-sm">
@@ -200,7 +200,7 @@ export default function WeddingDayPage() {
             ))}
           </div>
           <p className="mt-10 text-center font-serif text-[15px] leading-[1.8] text-foreground/85 sm:text-base">
-            <span className="font-serif font-medium text-foreground">
+            <span className="font-hand font-medium text-foreground">
               {weddingData.groom.name} ♥ {weddingData.bride.name}
             </span>
             의 결혼식이{" "}

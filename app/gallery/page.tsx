@@ -69,7 +69,7 @@ export default function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="font-serif text-[clamp(1.9rem,5.2vw,3.1rem)] font-normal leading-[1.2] text-foreground">
+            <h2 className="font-hand text-[clamp(2rem,5.4vw,3.2rem)] font-normal leading-[1.2] text-foreground">
               우리의 순간들
             </h2>
             <p className="mt-5 font-serif text-[15px] tracking-wide text-muted sm:text-base">

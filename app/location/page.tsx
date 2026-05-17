@@ -78,7 +78,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="font-serif text-[clamp(2rem,6vw,4rem)] font-normal leading-[1.15] tracking-[-0.025em] text-foreground"
+              className="font-hand text-[clamp(2.1rem,6.2vw,4.2rem)] font-normal leading-[1.15] tracking-[-0.025em] text-foreground"
             >
               {venue.name}
             </motion.h2>

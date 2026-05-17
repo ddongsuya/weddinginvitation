@@ -21,7 +21,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-center font-serif text-[clamp(1.9rem,5.4vw,3.1rem)] font-normal leading-[1.25] tracking-[-0.025em] text-foreground"
+            className="text-center font-hand text-[clamp(2rem,5.6vw,3.2rem)] font-normal leading-[1.25] tracking-[-0.025em] text-foreground"
           >
             {weddingData.invitation.title}
           </motion.h2>
@@ -94,7 +94,7 @@ function FamilyCard({
       <p className="mt-2 font-serif text-[13px] tracking-wide text-muted sm:text-sm">
         의 {relationship}
       </p>
-      <p className="mt-3 font-serif text-2xl tracking-[-0.02em] text-foreground sm:text-3xl">
+      <p className="mt-3 font-hand text-3xl tracking-[-0.02em] text-foreground sm:text-4xl">
         {name}
       </p>
     </div>

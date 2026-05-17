@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Gowun_Batang } from "next/font/google";
+import localFont from "next/font/local";
 import { NavShell } from "./components-home/NavShell";
 import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -19,6 +20,21 @@ const gowunBatang = Gowun_Batang({
   weight: ["400", "700"],
   variable: "--font-gowun-batang",
   display: "swap",
+});
+
+// 나눔 내아내의 손글씨 — applied as `font-hand` to display-only text
+// (names, hero titles, countdown numbers, the big date). Body text and
+// labels stay on Gowun Batang so small-text legibility isn't sacrificed.
+// preload: false because the .ttf is large (~5 MB) — letting it stream
+// in after first paint keeps LCP fast; Gowun Batang shows as fallback
+// until the swap.
+const nanumHand = localFont({
+  src: "./fonts/NanumNaEuiANaeSonGeurSsi.ttf",
+  variable: "--font-nanum-hand",
+  display: "swap",
+  preload: false,
+  weight: "400",
+  style: "normal",
 });
 
 const SITE_URL = resolveSiteUrl();
@@ -68,7 +84,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={gowunBatang.variable}>
+    <html
+      lang="ko"
+      className={`${gowunBatang.variable} ${nanumHand.variable}`}
+    >
       <body className="bg-background text-foreground antialiased">
         <NavShell>{children}</NavShell>
       </body>
