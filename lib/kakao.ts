@@ -89,7 +89,7 @@ export async function shareInvitation(): Promise<void> {
     // cleanly without cropping. The ?v= cache-bust forces Kakao's CDN to
     // re-fetch when the underlying file is updated; bump the number when
     // og-thumbnail.jpg changes.
-    const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg?v=2`;
+    const imageUrl = `${siteUrl}/photos/og-thumbnail.jpg?v=3`;
     const calendarUrl = buildCalendarUrl();
 
     // Format the date as the spec asks: 2026.08.29 (토) 12:30 여수히든베이호텔
@@ -102,6 +102,15 @@ export async function shareInvitation(): Promise<void> {
         title: `${weddingData.groom.name}♥${weddingData.bride.name}`,
         description: dateLine,
         imageUrl,
+        // Explicit dimensions force KakaoTalk's Feed renderer into the
+        // "large image" layout deterministically. Without these, the
+        // renderer guesses from a freshly-fetched image and falls back
+        // to compact when the dimensions aren't yet cached on Kakao's
+        // CDN — which is why some recipients see a tall preview and
+        // others see a small one. 1080×1080 ≥ 800 AND is 1:1, so
+        // Kakao's "big preview" criterion is met on every render.
+        imageWidth: 1080,
+        imageHeight: 1080,
         link: { mobileWebUrl: targetUrl, webUrl: targetUrl },
       },
       buttons: [
