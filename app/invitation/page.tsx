@@ -31,7 +31,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="mx-auto mt-16 max-w-md whitespace-pre-line text-center text-[17px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-lg sm:leading-[2]"
+            className="mx-auto mt-16 max-w-md whitespace-pre-line text-center text-[19px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-xl sm:leading-[2]"
           >
             {weddingData.invitation.body}
           </motion.p>
@@ -85,16 +85,16 @@ function FamilyCard({
 }) {
   return (
     <div className="text-center">
-      <p className="font-serif text-base tracking-wide text-accent sm:text-lg">
+      <p className="font-serif text-lg tracking-wide text-accent sm:text-xl">
         {role}
       </p>
-      <p className="mt-6 font-serif text-[15px] leading-[1.7] text-foreground sm:text-base">
+      <p className="mt-6 font-serif text-[17px] leading-[1.7] text-foreground sm:text-lg">
         {parents.father} &nbsp;·&nbsp; {parents.mother}
       </p>
-      <p className="mt-2 font-serif text-[13px] tracking-wide text-muted sm:text-sm">
+      <p className="mt-2 font-serif text-[15px] tracking-wide text-muted sm:text-base">
         의 {relationship}
       </p>
-      <p className="mt-3 font-hand text-3xl tracking-[-0.02em] text-foreground sm:text-4xl">
+      <p className="mt-3 font-hand text-4xl tracking-[-0.02em] text-foreground sm:text-5xl">
         {name}
       </p>
     </div>

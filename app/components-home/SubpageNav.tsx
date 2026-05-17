@@ -116,10 +116,10 @@ function NavCardInner({
       transition={{ type: "spring", stiffness: 360, damping: 24 }}
       className={`flex flex-col ${isPrev ? "items-start" : "items-end"}`}
     >
-      <span className="font-serif text-[13px] tracking-[0.15em] text-muted sm:text-sm">
+      <span className="font-serif text-[15px] tracking-[0.15em] text-muted sm:text-base">
         {caption}
       </span>
-      <span className="relative mt-3 inline-block font-serif text-xl tracking-[-0.015em] text-foreground sm:text-2xl">
+      <span className="relative mt-3 inline-block font-serif text-2xl tracking-[-0.015em] text-foreground sm:text-3xl">
         {label}
         <span
           aria-hidden

@@ -41,7 +41,7 @@ export default function WishesPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.8, delay: 0.25 }}
-            className="mx-auto mt-10 max-w-md text-[17px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-lg"
+            className="mx-auto mt-10 max-w-md text-[19px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-xl"
           >
             참석이 어려우신 분들을 위해
             <br />
@@ -96,7 +96,7 @@ function SideToggle({
         className="flex w-full items-center justify-between px-6 py-5 text-left sm:px-8 sm:py-6"
         aria-expanded={isOpen}
       >
-        <p className="font-serif text-lg tracking-[0.05em] text-foreground sm:text-xl">
+        <p className="font-serif text-xl tracking-[0.05em] text-foreground sm:text-2xl">
           {label}
         </p>
         <motion.span
@@ -193,10 +193,10 @@ function AccountRow({ account }: { account: Account }) {
       className="flex items-center justify-between gap-3 rounded-2xl bg-stone-50 px-4 py-4 sm:px-6"
     >
       <div className="min-w-0">
-        <p className="text-[13px] tracking-wide text-muted sm:text-sm">
+        <p className="text-[15px] tracking-wide text-muted sm:text-base">
           {account.holder}
         </p>
-        <p className="mt-1.5 truncate text-[15px] leading-relaxed tracking-[-0.005em] text-foreground sm:text-base">
+        <p className="mt-1.5 truncate text-[17px] leading-relaxed tracking-[-0.005em] text-foreground sm:text-lg">
           <span className="font-medium text-accent">{account.bank}</span>{" "}
           &nbsp;
           <span className="tabular-nums">{account.number}</span>
@@ -207,7 +207,7 @@ function AccountRow({ account }: { account: Account }) {
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.92 }}
         transition={{ type: "spring", stiffness: 380, damping: 18 }}
-        className="ml-3 shrink-0 rounded-full border border-stone-200 bg-white px-4 py-2 font-sans text-xs text-foreground transition-colors hover:border-accent/40 hover:text-accent"
+        className="ml-3 shrink-0 rounded-full border border-stone-200 bg-white px-4 py-2 font-sans text-sm text-foreground transition-colors hover:border-accent/40 hover:text-accent"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span

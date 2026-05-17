@@ -111,7 +111,7 @@ export default function GalleryPage() {
             <h2 className="font-hand text-[clamp(2rem,5.4vw,3.2rem)] font-normal leading-[1.2] text-foreground">
               우리의 순간들
             </h2>
-            <p className="mt-5 font-serif text-[15px] tracking-wide text-muted sm:text-base">
+            <p className="mt-5 font-serif text-[17px] tracking-wide text-muted sm:text-lg">
               총 {total}장
             </p>
           </motion.div>
@@ -230,7 +230,7 @@ export default function GalleryPage() {
                   </svg>
                 </motion.button>
               </div>
-              <p className="font-serif text-[15px] tracking-[0.2em] text-muted tabular-nums">
+              <p className="font-serif text-[17px] tracking-[0.2em] text-muted tabular-nums">
                 {page + 1} / {pageCount}
               </p>
             </div>

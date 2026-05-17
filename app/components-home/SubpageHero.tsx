@@ -56,7 +56,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="font-serif text-base tracking-[0.2em] text-white/90 sm:text-lg"
+          className="font-serif text-lg tracking-[0.2em] text-white/90 sm:text-xl"
         >
           {num}
         </motion.p>
@@ -73,7 +73,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-4 font-serif text-[17px] tracking-[0.05em] text-white/85 sm:text-lg"
+            className="mt-4 font-serif text-[19px] tracking-[0.05em] text-white/85 sm:text-xl"
           >
             {subtitle}
           </motion.p>
