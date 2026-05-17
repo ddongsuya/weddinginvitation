@@ -62,12 +62,13 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        // ?v= cache-bust so Facebook/Twitter/Slack/etc. re-fetch the OG
-        // preview the next time someone shares a link. Bump on thumbnail
-        // updates; keep in lockstep with lib/kakao.ts.
-        url: "/photos/og-thumbnail.jpg?v=3",
+        // 1080×1920 portrait — see scripts/build-og-thumbnail.mjs. The
+        // tall canvas is what keeps KakaoTalk from cropping the 1:1
+        // design that sits in the middle. Bump the ?v= alongside
+        // lib/kakao.ts whenever the underlying file changes.
+        url: "/photos/og-thumbnail.jpg?v=4",
         width: 1080,
-        height: 1080,
+        height: 1920,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",
       },
     ],
