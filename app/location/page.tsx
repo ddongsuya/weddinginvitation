@@ -87,7 +87,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.8, delay: 0.25 }}
-              className="mt-5 text-[19px] tracking-wide text-muted sm:text-xl"
+              className="mt-5 text-[21px] tracking-wide text-muted sm:text-2xl"
             >
               {venue.hall}
             </motion.p>
@@ -142,7 +142,7 @@ export default function LocationPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center text-[19px] tracking-[0.04em] text-muted sm:text-xl">
+          <p className="text-center text-[21px] tracking-[0.04em] text-muted sm:text-2xl">
             지도 앱에서 길찾기
           </p>
           <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
@@ -153,7 +153,7 @@ export default function LocationPage() {
               whileHover={{ y: -3, boxShadow: "0 12px 30px rgba(16,185,129,0.25)" }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 320, damping: 22 }}
-              className="rounded-2xl bg-emerald-500 py-5 text-center text-base font-medium text-white shadow-[0_4px_14px_rgba(16,185,129,0.18)] sm:py-7 sm:text-lg"
+              className="rounded-2xl bg-emerald-500 py-5 text-center text-lg font-medium text-white shadow-[0_4px_14px_rgba(16,185,129,0.18)] sm:py-7 sm:text-xl"
             >
               네이버지도
             </motion.a>
@@ -164,7 +164,7 @@ export default function LocationPage() {
               whileHover={{ y: -3, boxShadow: "0 12px 30px rgba(252,211,77,0.4)" }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 320, damping: 22 }}
-              className="rounded-2xl bg-yellow-300 py-5 text-center text-base font-medium text-stone-900 shadow-[0_4px_14px_rgba(252,211,77,0.3)] sm:py-7 sm:text-lg"
+              className="rounded-2xl bg-yellow-300 py-5 text-center text-lg font-medium text-stone-900 shadow-[0_4px_14px_rgba(252,211,77,0.3)] sm:py-7 sm:text-xl"
             >
               카카오맵
             </motion.a>
@@ -174,7 +174,7 @@ export default function LocationPage() {
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.985 }}
             transition={{ type: "spring", stiffness: 320, damping: 22 }}
-            className="mt-3 w-full rounded-2xl border border-stone-200 bg-white py-4 text-base text-foreground transition-colors hover:border-stone-300 sm:py-5 sm:text-lg"
+            className="mt-3 w-full rounded-2xl border border-stone-200 bg-white py-4 text-lg text-foreground transition-colors hover:border-stone-300 sm:py-5 sm:text-xl"
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
@@ -208,11 +208,11 @@ function InfoRow({
   value: ReactNode;
 }) {
   return (
-    <div className="grid grid-cols-[6rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-stone-200/70 pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[7rem_1fr]">
-      <dt className="font-serif text-[15px] tracking-[0.15em] text-accent sm:text-base">
+    <div className="grid grid-cols-[6.5rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-stone-200/70 pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[7.5rem_1fr]">
+      <dt className="font-serif text-[17px] tracking-[0.15em] text-accent sm:text-lg">
         {label}
       </dt>
-      <dd className="text-[17px] leading-[1.75] tracking-[-0.005em] text-foreground sm:text-lg">
+      <dd className="text-[19px] leading-[1.75] tracking-[-0.005em] text-foreground sm:text-xl">
         {value}
       </dd>
     </div>

@@ -116,9 +116,12 @@ function NavCardInner({
       transition={{ type: "spring", stiffness: 360, damping: 24 }}
       className={`flex flex-col ${isPrev ? "items-start" : "items-end"}`}
     >
-      <span className="font-serif text-[15px] tracking-[0.15em] text-muted sm:text-base">
+      <span className="font-serif text-[17px] tracking-[0.15em] text-muted sm:text-lg">
         {caption}
       </span>
+      {/* Label intentionally held at text-2xl/text-3xl — per user request
+          to keep the prev/next label size unchanged (longer menu names
+          like "마음 전하실 곳" would otherwise wrap into 2 lines on mobile). */}
       <span className="relative mt-3 inline-block font-serif text-2xl tracking-[-0.015em] text-foreground sm:text-3xl">
         {label}
         <span
