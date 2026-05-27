@@ -14,10 +14,10 @@ export function SubpageNav({ currentHref }: { currentHref: string }) {
   return (
     <nav
       data-bottom-nav
-      className="border-t border-stone-200/70 px-6 py-12 sm:px-10 sm:py-16"
+      className="border-t border-stone-200/70 px-4 py-12 sm:px-8 sm:py-16"
       aria-label="페이지 네비게이션"
     >
-      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-4">
+      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:gap-4">
         {prev ? (
           <NavLink
             href={prev.href}
@@ -116,13 +116,14 @@ function NavCardInner({
       transition={{ type: "spring", stiffness: 360, damping: 24 }}
       className={`flex flex-col ${isPrev ? "items-start" : "items-end"}`}
     >
-      <span className="font-serif text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-[0.15em] text-muted">
+      <span className="font-serif text-[clamp(1.25rem,5vw,1.625rem)] tracking-[0.15em] text-muted">
         {caption}
       </span>
-      {/* Label intentionally held at text-2xl/text-3xl — per user request
-          to keep the prev/next label size unchanged (longer menu names
-          like "마음 전하실 곳" would otherwise wrap into 2 lines on mobile). */}
-      <span className="relative mt-3 inline-block font-serif text-2xl tracking-[-0.015em] text-foreground sm:text-3xl">
+      {/* Bumped per user feedback: "전부 너무 작아서 보이지 않음". The
+          longest label "마음 전하실 곳" will wrap to two lines on phones
+          narrower than ~400 px — that's accepted as a deliberate trade
+          so the label is comfortably readable everywhere else. */}
+      <span className="relative mt-3 inline-block font-serif text-[clamp(1.875rem,7.5vw,3rem)] font-medium leading-[1.15] tracking-[-0.015em] text-foreground">
         {label}
         <span
           aria-hidden

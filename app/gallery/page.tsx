@@ -99,7 +99,7 @@ export default function GalleryPage() {
         photo={weddingData.menuHeroes.gallery}
       />
 
-      <section className="px-6 py-20 sm:px-10 sm:py-28">
+      <section className="px-4 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -108,7 +108,7 @@ export default function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="font-hand text-[clamp(2.5rem,8vw,4rem)] font-normal leading-[1.15] text-foreground">
+            <h2 className="font-hand text-[clamp(2.75rem,8.5vw,4.25rem)] font-medium leading-[1.15] text-foreground">
               우리의 순간들
             </h2>
             <p className="mt-5 font-serif text-[clamp(1.25rem,5vw,1.625rem)] tracking-wide text-muted">

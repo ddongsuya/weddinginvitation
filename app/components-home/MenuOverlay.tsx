@@ -133,7 +133,7 @@ export function MenuOverlay({
                       >
                         {item.num}
                       </span>
-                      <span className="font-hand text-[clamp(2.4rem,8vw,4.6rem)] font-normal leading-[1.1] tracking-[-0.02em]">
+                      <span className="font-hand text-[clamp(2.75rem,9vw,5rem)] font-medium leading-[1.1] tracking-[-0.02em]">
                         {item.label}
                       </span>
                       <motion.span
@@ -170,7 +170,7 @@ export function MenuOverlay({
                   <span className="font-serif text-sm tracking-[0.15em] text-white/55 sm:text-base">
                     {SHARE_ITEM.num}
                   </span>
-                  <span className="font-hand text-[clamp(2.4rem,8vw,4.6rem)] font-normal leading-[1.1] tracking-[-0.02em]">
+                  <span className="font-hand text-[clamp(2.75rem,9vw,5rem)] font-medium leading-[1.1] tracking-[-0.02em]">
                     {SHARE_ITEM.label}
                   </span>
                   <motion.span

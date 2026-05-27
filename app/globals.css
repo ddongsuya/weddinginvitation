@@ -41,6 +41,21 @@ body {
   word-break: keep-all;
   line-break: strict;
   text-rendering: optimizeLegibility;
+  /* User feedback: 손글씨 폰트 stroke가 너무 가늘어 잘 안 보임.
+     Nanum 내아내의 손글씨 ttf has only weight 400 baked in, so we
+     ask the browser to synthesize a medium weight AND paint a thin
+     same-color stroke around every glyph. Combined, this thickens
+     letters by ~0.4-0.6 px without smudging the handwriting shapes. */
+  font-weight: 500;
+  -webkit-text-stroke: 0.4px currentColor;
+}
+
+/* Drop the synthetic stroke on icons/buttons whose SVGs use their own
+   stroke property — the cascading text-stroke would otherwise pile on
+   top of the intended icon line width. */
+svg,
+svg * {
+  -webkit-text-stroke: 0;
 }
 
 /* Headlines breathe — moderate tracking, snug leading. */

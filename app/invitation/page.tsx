@@ -14,14 +14,14 @@ export default function InvitationPage() {
         photo={weddingData.menuHeroes.invitation}
       />
 
-      <section className="px-6 py-28 sm:px-10 sm:py-40">
+      <section className="px-4 py-28 sm:px-8 sm:py-40">
         <div className="mx-auto max-w-2xl">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-center font-hand text-[clamp(2.5rem,8vw,4rem)] font-normal leading-[1.2] tracking-[-0.025em] text-foreground"
+            className="text-center font-hand text-[clamp(2.5rem,8vw,4rem)] font-medium leading-[1.2] tracking-[-0.025em] text-foreground"
           >
             {weddingData.invitation.title}
           </motion.h2>
@@ -94,7 +94,7 @@ function FamilyCard({
       <p className="mt-2 font-serif text-[20px] tracking-wide text-muted sm:text-xl">
         의 {relationship}
       </p>
-      <p className="mt-3 font-hand text-[clamp(3rem,11vw,5rem)] tracking-[-0.02em] text-foreground">
+      <p className="mt-3 font-hand text-[clamp(3.5rem,12vw,6rem)] font-medium tracking-[-0.02em] text-foreground">
         {name}
       </p>
     </div>

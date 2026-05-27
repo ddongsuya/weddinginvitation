@@ -25,14 +25,14 @@ export default function WishesPage() {
         photo={weddingData.menuHeroes.wishes}
       />
 
-      <section className="px-6 py-28 sm:px-10 sm:py-36">
+      <section className="px-4 py-28 sm:px-8 sm:py-36">
         <div className="mx-auto max-w-2xl text-center">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="font-hand text-[clamp(2.5rem,8vw,4rem)] font-normal leading-[1.15] tracking-[-0.025em] text-foreground"
+            className="font-hand text-[clamp(2.75rem,8.5vw,4.25rem)] font-medium leading-[1.15] tracking-[-0.025em] text-foreground"
           >
             마음 전하실 곳
           </motion.h2>
@@ -50,7 +50,7 @@ export default function WishesPage() {
         </div>
       </section>
 
-      <section className="px-6 pb-28 sm:px-10 sm:pb-36">
+      <section className="px-4 pb-28 sm:px-8 sm:pb-36">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

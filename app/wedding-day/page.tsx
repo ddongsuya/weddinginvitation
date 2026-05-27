@@ -64,7 +64,7 @@ export default function WeddingDayPage() {
         photo={weddingData.menuHeroes.weddingDay}
       />
 
-      <section className="px-6 py-28 sm:px-10 sm:py-36">
+      <section className="px-4 py-28 sm:px-8 sm:py-36">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -73,20 +73,20 @@ export default function WeddingDayPage() {
             transition={{ duration: 1, delay: 0.15 }}
             className="font-hand"
           >
-            <div className="text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.04em] text-muted">
+            <div className="text-[clamp(1.875rem,7vw,2.5rem)] font-medium tracking-[0.05em] text-muted">
               2026년 8월
             </div>
-            <div className="mt-6 text-[clamp(7rem,22vw,18rem)] font-normal leading-[0.95] tracking-[-0.03em] text-foreground">
+            <div className="mt-6 text-[clamp(8rem,26vw,20rem)] font-medium leading-[0.95] tracking-[-0.03em] text-foreground">
               29
             </div>
-            <div className="mt-6 text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.04em] text-foreground/80">
+            <div className="mt-6 text-[clamp(1.875rem,7vw,2.5rem)] font-medium tracking-[0.05em] text-foreground/85">
               토요일 · 낮 12시 30분
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section className="px-6 pb-28 sm:px-10 sm:pb-32">
+      <section className="px-4 pb-28 sm:px-8 sm:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +171,7 @@ export default function WeddingDayPage() {
         </motion.div>
       </section>
 
-      <section className="border-t border-stone-200/70 px-6 py-20 sm:px-10 sm:py-28">
+      <section className="border-t border-stone-200/70 px-4 py-20 sm:px-8 sm:py-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -179,7 +179,7 @@ export default function WeddingDayPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center font-serif text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.15em] text-accent">
+          <p className="text-center font-serif text-[clamp(1.875rem,7vw,2.5rem)] font-medium tracking-[0.15em] text-accent">
             결혼식까지
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3 text-center sm:gap-6">
@@ -190,16 +190,16 @@ export default function WeddingDayPage() {
               { label: "초", value: countdown.seconds },
             ].map((it) => (
               <div key={it.label}>
-                <div className="font-hand text-[clamp(2.3rem,8vw,4.2rem)] font-normal leading-none text-foreground tabular-nums">
+                <div className="font-hand text-[clamp(3rem,11vw,5.5rem)] font-medium leading-none text-foreground tabular-nums">
                   {String(it.value).padStart(2, "0")}
                 </div>
-                <div className="mt-2 font-serif text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-[0.1em] text-muted">
+                <div className="mt-3 font-serif text-[clamp(1.25rem,5vw,1.625rem)] tracking-[0.1em] text-muted">
                   {it.label}
                 </div>
               </div>
             ))}
           </div>
-          <p className="mt-10 text-center font-serif text-[clamp(1.25rem,5vw,1.625rem)] leading-[1.8] text-foreground/85">
+          <p className="mt-10 text-center font-serif text-[clamp(1.375rem,5.5vw,1.75rem)] leading-[1.8] text-foreground/85">
             <span className="font-hand font-medium text-foreground">
               {weddingData.groom.name} ♥ {weddingData.bride.name}
             </span>

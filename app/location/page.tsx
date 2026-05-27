@@ -69,7 +69,7 @@ export default function LocationPage() {
         photo={weddingData.menuHeroes.location}
       />
 
-      <section className="px-6 py-28 sm:px-10 sm:py-36">
+      <section className="px-4 py-28 sm:px-8 sm:py-36">
         <div className="mx-auto max-w-3xl">
           {/* 1. 식장 이름 + 홀 이름 */}
           <div className="text-center">
@@ -78,7 +78,7 @@ export default function LocationPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="font-hand text-[clamp(2.6rem,8.5vw,4.4rem)] font-normal leading-[1.15] tracking-[-0.025em] text-foreground"
+              className="font-hand text-[clamp(2.875rem,9vw,4.75rem)] font-medium leading-[1.15] tracking-[-0.025em] text-foreground"
             >
               {venue.name}
             </motion.h2>
@@ -134,7 +134,7 @@ export default function LocationPage() {
         </div>
       </section>
 
-      <section className="px-6 pb-20 sm:px-10 sm:pb-28">
+      <section className="px-4 pb-20 sm:px-8 sm:pb-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
