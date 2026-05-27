@@ -116,7 +116,7 @@ function NavCardInner({
       transition={{ type: "spring", stiffness: 360, damping: 24 }}
       className={`flex flex-col ${isPrev ? "items-start" : "items-end"}`}
     >
-      <span className="font-serif text-[17px] tracking-[0.15em] text-muted sm:text-lg">
+      <span className="font-serif text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-[0.15em] text-muted">
         {caption}
       </span>
       {/* Label intentionally held at text-2xl/text-3xl — per user request

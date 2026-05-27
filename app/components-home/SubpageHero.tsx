@@ -56,11 +56,11 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="font-serif text-xl tracking-[0.2em] text-white/90 sm:text-2xl"
+          className="font-serif text-[clamp(1.4rem,5.5vw,1.875rem)] tracking-[0.2em] text-white/90"
         >
           {num}
         </motion.p>
-        <h1 className="mt-4 font-hand text-[clamp(3rem,9vw,7rem)] font-normal leading-[0.95] tracking-[-0.03em] sm:mt-6">
+        <h1 className="mt-4 font-hand text-[clamp(4rem,13vw,9rem)] font-normal leading-[0.95] tracking-[-0.03em] sm:mt-6">
           <SplitText
             text={label}
             variant="rise"
@@ -73,7 +73,7 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-4 font-serif text-[21px] tracking-[0.05em] text-white/85 sm:text-2xl"
+            className="mt-4 font-serif text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.05em] text-white/85"
           >
             {subtitle}
           </motion.p>

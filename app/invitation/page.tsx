@@ -21,7 +21,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.1 }}
-            className="text-center font-hand text-[clamp(2rem,5.6vw,3.2rem)] font-normal leading-[1.25] tracking-[-0.025em] text-foreground"
+            className="text-center font-hand text-[clamp(2.5rem,8vw,4rem)] font-normal leading-[1.2] tracking-[-0.025em] text-foreground"
           >
             {weddingData.invitation.title}
           </motion.h2>
@@ -31,7 +31,7 @@ export default function InvitationPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="mx-auto mt-16 max-w-md whitespace-pre-line text-center text-[21px] leading-[2] tracking-[-0.01em] text-foreground/85 sm:text-2xl sm:leading-[2]"
+            className="mx-auto mt-16 max-w-xl whitespace-pre-line text-center text-[clamp(1.5rem,5.5vw,1.8rem)] leading-[1.9] tracking-[-0.01em] text-foreground/85"
           >
             {weddingData.invitation.body}
           </motion.p>
@@ -85,16 +85,16 @@ function FamilyCard({
 }) {
   return (
     <div className="text-center">
-      <p className="font-serif text-xl tracking-wide text-accent sm:text-2xl">
+      <p className="font-serif text-2xl tracking-wide text-accent sm:text-3xl">
         {role}
       </p>
-      <p className="mt-6 font-serif text-[19px] leading-[1.7] text-foreground sm:text-xl">
+      <p className="mt-6 font-serif text-[22px] leading-[1.7] text-foreground sm:text-2xl">
         {parents.father} &nbsp;·&nbsp; {parents.mother}
       </p>
-      <p className="mt-2 font-serif text-[17px] tracking-wide text-muted sm:text-lg">
+      <p className="mt-2 font-serif text-[20px] tracking-wide text-muted sm:text-xl">
         의 {relationship}
       </p>
-      <p className="mt-3 font-hand text-5xl tracking-[-0.02em] text-foreground sm:text-6xl">
+      <p className="mt-3 font-hand text-[clamp(3rem,11vw,5rem)] tracking-[-0.02em] text-foreground">
         {name}
       </p>
     </div>

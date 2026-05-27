@@ -73,13 +73,13 @@ export default function WeddingDayPage() {
             transition={{ duration: 1, delay: 0.15 }}
             className="font-hand"
           >
-            <div className="text-[21px] tracking-[0.04em] text-muted sm:text-2xl">
+            <div className="text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.04em] text-muted">
               2026년 8월
             </div>
             <div className="mt-6 text-[clamp(7rem,22vw,18rem)] font-normal leading-[0.95] tracking-[-0.03em] text-foreground">
               29
             </div>
-            <div className="mt-6 text-[21px] tracking-[0.04em] text-foreground/80 sm:text-2xl">
+            <div className="mt-6 text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.04em] text-foreground/80">
               토요일 · 낮 12시 30분
             </div>
           </motion.div>
@@ -94,13 +94,13 @@ export default function WeddingDayPage() {
           transition={{ duration: 0.9 }}
           className="mx-auto max-w-md"
         >
-          <p className="text-center font-serif text-[19px] tracking-[0.2em] text-muted sm:text-xl">
+          <p className="text-center font-serif text-[clamp(1.25rem,5vw,1.5rem)] tracking-[0.2em] text-muted">
             달력
           </p>
-          <div className="mt-4 text-center font-serif text-2xl tracking-[0.25em] text-foreground sm:text-3xl">
+          <div className="mt-4 text-center font-serif text-[clamp(1.75rem,6.5vw,2.25rem)] tracking-[0.25em] text-foreground">
             {year} . {String(month).padStart(2, "0")}
           </div>
-          <div className="mt-6 grid grid-cols-7 gap-y-3 text-center text-[17px] sm:text-lg">
+          <div className="mt-6 grid grid-cols-7 gap-y-3 text-center text-[clamp(1.1rem,4.5vw,1.375rem)]">
             {DAYS.map((d, i) => (
               <div
                 key={d}
@@ -179,7 +179,7 @@ export default function WeddingDayPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center font-serif text-xl tracking-[0.15em] text-accent sm:text-2xl">
+          <p className="text-center font-serif text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.15em] text-accent">
             결혼식까지
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3 text-center sm:gap-6">
@@ -190,16 +190,16 @@ export default function WeddingDayPage() {
               { label: "초", value: countdown.seconds },
             ].map((it) => (
               <div key={it.label}>
-                <div className="font-hand text-[clamp(1.9rem,6.4vw,3.6rem)] font-normal leading-none text-foreground tabular-nums">
+                <div className="font-hand text-[clamp(2.3rem,8vw,4.2rem)] font-normal leading-none text-foreground tabular-nums">
                   {String(it.value).padStart(2, "0")}
                 </div>
-                <div className="mt-2 font-serif text-[17px] tracking-[0.1em] text-muted sm:text-lg">
+                <div className="mt-2 font-serif text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-[0.1em] text-muted">
                   {it.label}
                 </div>
               </div>
             ))}
           </div>
-          <p className="mt-10 text-center font-serif text-[19px] leading-[1.8] text-foreground/85 sm:text-xl">
+          <p className="mt-10 text-center font-serif text-[clamp(1.25rem,5vw,1.625rem)] leading-[1.8] text-foreground/85">
             <span className="font-hand font-medium text-foreground">
               {weddingData.groom.name} ♥ {weddingData.bride.name}
             </span>

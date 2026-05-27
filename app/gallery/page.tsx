@@ -108,10 +108,10 @@ export default function GalleryPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="font-hand text-[clamp(2rem,5.4vw,3.2rem)] font-normal leading-[1.2] text-foreground">
+            <h2 className="font-hand text-[clamp(2.5rem,8vw,4rem)] font-normal leading-[1.15] text-foreground">
               우리의 순간들
             </h2>
-            <p className="mt-5 font-serif text-[19px] tracking-wide text-muted sm:text-xl">
+            <p className="mt-5 font-serif text-[clamp(1.25rem,5vw,1.625rem)] tracking-wide text-muted">
               총 {total}장
             </p>
           </motion.div>
@@ -230,7 +230,7 @@ export default function GalleryPage() {
                   </svg>
                 </motion.button>
               </div>
-              <p className="font-serif text-[19px] tracking-[0.2em] text-muted tabular-nums">
+              <p className="font-serif text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-[0.2em] text-muted tabular-nums">
                 {page + 1} / {pageCount}
               </p>
             </div>
