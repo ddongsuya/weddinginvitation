@@ -25,7 +25,7 @@ const SLIDES: Slide[] = [
         variant="rise"
         staggerChildren={0.12}
         delay={0.15}
-        className="font-hand text-[clamp(8rem,30vw,22rem)] font-medium leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+        className="font-hand text-[clamp(7rem,32vw,24rem)] font-medium leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
       />
     ),
   },
@@ -188,7 +188,7 @@ export function HeroSlideshow() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-8 text-center sm:top-[26vh] sm:px-12"
+          className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-2 text-center sm:top-[26vh] sm:px-6"
         >
           <motion.div
             animate={{ y: [0, -8, 0], rotate: [-0.3, 0.3, -0.3] }}
