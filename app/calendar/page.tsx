@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { weddingData } from "@/lib/data";
 
@@ -20,30 +19,79 @@ import { weddingData } from "@/lib/data";
 //      response to the OS, which surfaces the "이벤트 추가" sheet of
 //      whichever calendar app the user has set as default.
 //
-//   3. When the user returns to the browser tab (visibilitychange
-//      fires as they come back from the calendar app), we render a
-//      "추가됐어요" confirmation for a brief beat and then carry the
-//      guest straight into the invitation (router.push("/")). The
-//      earlier window.close() approach was a dead end — on a normally
-//      navigated tab the browser refuses to honor it, leaving guests
-//      stuck. Routing home keeps them inside the card. A manual
-//      "지금 청첩장 보기" button sits on the card for anyone who taps
-//      before the auto-redirect fires.
+//   3. Once the guest comes back from the calendar step we show a brief
+//      "추가됐어요" confirmation and then hard-navigate to the
+//      invitation ("/"). Detecting that return is the tricky part,
+//      because every platform behaves differently:
+//        • Android Chrome: the calendar app opens over the tab → the
+//          page goes hidden → visibilitychange fires "visible" on return.
+//        • iOS Safari: tapping the .ics navigates Safari away to the
+//          system event preview, so pressing "완료"/back RELOADS this
+//          page. The earlier in-memory visibilitychange/ref logic was
+//          wiped by that reload, dumping the guest back on the "ready"
+//          screen. We now persist a sessionStorage flag the moment the
+//          download fires; on the reloaded mount we detect it and jump
+//          straight to the confirmation → invitation.
+//        • bfcache restores fire pageshow with persisted = true.
+//      The earlier window.close() approach was abandoned — a normally
+//      navigated tab refuses to honor it, stranding guests.
 //
 // The auto-click can be blocked by stricter user-gesture rules; in
 // that case the big "캘린더 앱 열기" button on screen is the manual
-// fallback (identical href + download attribute).
+// fallback (identical href + download attribute), and a small
+// "청첩장으로 돌아가기" link is always present as a guaranteed exit.
 
 type Stage = "detecting" | "redirecting" | "ready" | "added";
 
+// Survives the iOS reload-after-.ics: set the instant we kick off the
+// download, read on the next mount to know the guest already went through
+// the calendar step.
+const INITIATED_KEY = "wedding_cal_initiated";
+
+function goHome() {
+  if (typeof window === "undefined") return;
+  // Hard navigation (not router.push) so the invitation loads cleanly even
+  // when we arrive here via a browser reload / bfcache restore.
+  window.location.href = "/";
+}
+
 export default function CalendarPage() {
-  const router = useRouter();
   const [stage, setStage] = useState<Stage>("detecting");
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
   const autoFiredRef = useRef(false);
 
+  const markInitiated = () => {
+    autoFiredRef.current = true;
+    try {
+      sessionStorage.setItem(INITIATED_KEY, "1");
+    } catch {
+      /* private mode / storage disabled — refs still cover same-page flow */
+    }
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Returning from the calendar step on a FRESH page load: iOS Safari
+    // navigates away to render the .ics preview, so tapping "완료"/back
+    // reloads us. If we flagged that the download already fired, skip the
+    // whole dance and confirm → invitation.
+    let initiated = false;
+    try {
+      initiated = sessionStorage.getItem(INITIATED_KEY) === "1";
+    } catch {
+      initiated = false;
+    }
+    if (initiated) {
+      try {
+        sessionStorage.removeItem(INITIATED_KEY);
+      } catch {
+        /* ignore */
+      }
+      autoFiredRef.current = true;
+      setStage("added");
+      return;
+    }
 
     const ua = navigator.userAgent;
     const isKakao = /KAKAOTALK/i.test(ua);
@@ -63,41 +111,48 @@ export default function CalendarPage() {
 
     const fireDownload = window.setTimeout(() => {
       if (autoFiredRef.current) return;
-      autoFiredRef.current = true;
+      markInitiated();
       downloadLinkRef.current?.click();
     }, 350);
 
-    // When the user returns from the calendar sheet, switch to the
-    // "added" confirmation card.
-    const onVisible = () => {
-      if (
-        document.visibilityState === "visible" &&
-        autoFiredRef.current
-      ) {
-        setStage("added");
+    // Same-page return paths (no reload): Android calendar app handoff
+    // surfaces visibilitychange "visible"; bfcache restore surfaces
+    // pageshow with persisted = true.
+    const advance = () => {
+      if (!autoFiredRef.current) return;
+      try {
+        sessionStorage.removeItem(INITIATED_KEY);
+      } catch {
+        /* ignore */
       }
+      setStage("added");
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") advance();
+    };
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) advance();
     };
     document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pageshow", onPageShow);
 
     return () => {
       window.clearTimeout(fireDownload);
       document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pageshow", onPageShow);
     };
   }, []);
 
-  // Once the calendar event is registered and the guest returns to the
-  // tab, hold the "추가됐어요" confirmation just long enough to read it,
-  // then route them straight into the invitation.
+  // Once we reach the confirmation, hold it just long enough to read,
+  // then carry the guest straight into the invitation.
   useEffect(() => {
     if (stage !== "added") return;
-    const t = window.setTimeout(() => {
-      router.push("/");
-    }, 1600);
+    const t = window.setTimeout(goHome, 1600);
     return () => window.clearTimeout(t);
-  }, [stage, router]);
+  }, [stage]);
 
   const goToInvitation = () => {
-    router.push("/");
+    goHome();
   };
 
   return (
@@ -176,9 +231,7 @@ export default function CalendarPage() {
               <motion.a
                 href="/api/calendar"
                 download="wedding.ics"
-                onClick={() => {
-                  autoFiredRef.current = true;
-                }}
+                onClick={markInitiated}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className="mt-10 grid w-full place-items-center rounded-full bg-stone-900 px-6 py-5 font-serif text-[clamp(1.125rem,5vw,1.5rem)] font-medium text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition-colors hover:bg-stone-800"
@@ -190,6 +243,14 @@ export default function CalendarPage() {
                 캘린더 앱이 자동으로 열리지 않으면<br />
                 위 버튼을 눌러주세요.
               </p>
+
+              <button
+                type="button"
+                onClick={goToInvitation}
+                className="mt-6 inline-block font-serif text-base text-muted underline underline-offset-4 transition-colors hover:text-foreground sm:text-lg"
+              >
+                청첩장으로 돌아가기
+              </button>
             </motion.div>
           )}
 
