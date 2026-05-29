@@ -13,6 +13,17 @@ export function NavShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // /calendar is an interstitial — guests land there as a hand-off
+  // between KakaoTalk and the OS calendar app, not as a wedding card
+  // to read. Wrapping it in the global chrome (top pills, music
+  // button, scroll bar, menu overlay) creates a competing "처음으로"
+  // pill at the top that confused testers after they completed the
+  // calendar add. Render the page bare; it ships its own
+  // "청첩장으로 돌아가기" link.
+  if (pathname === "/calendar") {
+    return <>{children}</>;
+  }
+
   return (
     <>
       <AnimatePresence>
