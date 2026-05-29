@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { weddingData } from "@/lib/data";
 
@@ -22,11 +22,13 @@ import { weddingData } from "@/lib/data";
 //
 //   3. When the user returns to the browser tab (visibilitychange
 //      fires as they come back from the calendar app), we render a
-//      "추가됐어요" confirmation with a "이 창 닫기" button that
-//      attempts window.close(). On a tab opened from a kakaotalk://
-//      scheme, modern mobile browsers allow window.close() to take
-//      effect — if for any reason it doesn't, the back-to-invitation
-//      link is right below as a safe exit.
+//      "추가됐어요" confirmation for a brief beat and then carry the
+//      guest straight into the invitation (router.push("/")). The
+//      earlier window.close() approach was a dead end — on a normally
+//      navigated tab the browser refuses to honor it, leaving guests
+//      stuck. Routing home keeps them inside the card. A manual
+//      "지금 청첩장 보기" button sits on the card for anyone who taps
+//      before the auto-redirect fires.
 //
 // The auto-click can be blocked by stricter user-gesture rules; in
 // that case the big "캘린더 앱 열기" button on screen is the manual
@@ -35,6 +37,7 @@ import { weddingData } from "@/lib/data";
 type Stage = "detecting" | "redirecting" | "ready" | "added";
 
 export default function CalendarPage() {
+  const router = useRouter();
   const [stage, setStage] = useState<Stage>("detecting");
   const downloadLinkRef = useRef<HTMLAnchorElement>(null);
   const autoFiredRef = useRef(false);
@@ -82,9 +85,19 @@ export default function CalendarPage() {
     };
   }, []);
 
-  const tryCloseWindow = () => {
-    if (typeof window === "undefined") return;
-    window.close();
+  // Once the calendar event is registered and the guest returns to the
+  // tab, hold the "추가됐어요" confirmation just long enough to read it,
+  // then route them straight into the invitation.
+  useEffect(() => {
+    if (stage !== "added") return;
+    const t = window.setTimeout(() => {
+      router.push("/");
+    }, 1600);
+    return () => window.clearTimeout(t);
+  }, [stage, router]);
+
+  const goToInvitation = () => {
+    router.push("/");
   };
 
   return (
@@ -193,26 +206,19 @@ export default function CalendarPage() {
                 일정이 추가됐어요
               </h1>
               <p className="mt-4 text-[clamp(1rem,4.5vw,1.25rem)] leading-relaxed text-muted">
-                결혼식 날짜가 캘린더에 잘 들어갔는지<br />
-                한 번만 확인해주세요.
+                잠시 후 청첩장으로<br />
+                자동으로 이동할게요.
               </p>
 
               <motion.button
                 type="button"
-                onClick={tryCloseWindow}
+                onClick={goToInvitation}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className="mt-10 grid w-full place-items-center rounded-full bg-stone-900 px-6 py-5 font-serif text-[clamp(1.125rem,5vw,1.5rem)] font-medium text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition-colors hover:bg-stone-800"
               >
-                이 창 닫기
+                지금 청첩장 보기
               </motion.button>
-
-              <Link
-                href="/"
-                className="mt-6 inline-block font-serif text-base text-muted underline underline-offset-4 transition-colors hover:text-foreground sm:text-lg"
-              >
-                청첩장으로 돌아가기
-              </Link>
             </motion.div>
           )}
         </AnimatePresence>
