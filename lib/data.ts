@@ -2,6 +2,10 @@
 // 파일명 규칙: 01.jpg, 02.jpg, ... 두 자리 숫자 + .jpg 통일.
 const GALLERY_COUNT = 34;
 
+// 갤러리 파일 일괄 교체할 때마다 ↑ 해주세요. 같은 URL을 캐시하던
+// 기기들이 옛 사진을 그대로 보여주는 현상을 강제로 무효화합니다.
+const GALLERY_VERSION = 2;
+
 export const weddingData = {
   groom: {
     name: "임정모",
@@ -52,7 +56,7 @@ export const weddingData = {
     coordinates: { lat: 34.72163, lng: 127.6996 },
   },
   gallery: Array.from({ length: GALLERY_COUNT }, (_, i) => ({
-    src: `/photos/${String(i + 1).padStart(2, "0")}.jpg`,
+    src: `/photos/${String(i + 1).padStart(2, "0")}.jpg?v=${GALLERY_VERSION}`,
     alt: `웨딩 사진 ${i + 1}`,
   })),
   accounts: {
