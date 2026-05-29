@@ -31,7 +31,13 @@ export default function LocationPage() {
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
   const { venue } = weddingData;
-  const query = encodeURIComponent(`${venue.name} ${venue.address}`);
+  // Map-app search query — just the venue name. Including the full
+  // address made the search bar populate with the entire string
+  // ("여수 히든베이호텔 전라남도 여수시 신월로 496-25 히든베이호텔
+  // 그랜드볼룸 웨딩홀 지하 2층"), which both Naver/Kakao maps fail to
+  // resolve cleanly. The short venue name lands on the correct hotel
+  // pin every time.
+  const query = encodeURIComponent(venue.name);
   const { lat, lng } = venue.coordinates;
   const telDigits = venue.tel.replace(/-/g, "");
 
