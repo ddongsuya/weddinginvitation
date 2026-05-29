@@ -47,42 +47,115 @@ export default function GalleryPage() {
     });
   };
 
-  // Grid swipe — read straight from pointer events instead of Framer's
-  // `drag` gesture. The old drag-based version needed a "priming" touch
-  // before the FIRST swipe registered: `dragDirectionLock` (meant for
-  // two-axis drags) made Framer wait to detect an axis while every photo
-  // child's own `whileTap` competed for the same pointer, and on first
-  // mount the route fade + staggered entrance were still animating — so
-  // the opening gesture got swallowed. Plain pointerdown/up is live from
-  // the very first frame: record where the finger lands, and on release
-  // page the grid if the movement was clearly horizontal. `touch-action:
-  // pan-y` (below) still hands vertical scrolling to the browser.
+  // Grid swipe. Two deliberate paths — the old single drag-based version
+  // both needed a "priming" touch AND let the page drift vertically mid-
+  // swipe, so neither path uses Framer's `drag` anymore:
+  //
+  //  • Touch — handled by the native listeners in the effect below so we
+  //    can DIRECTION-LOCK. The instant a gesture reads as horizontal we
+  //    `preventDefault` the touchmove, which pins the page to the swipe
+  //    (no up/down drift while flipping). A vertical-leaning gesture is
+  //    never preventDefaulted, so the page scrolls with full native
+  //    momentum. `touch-action: pan-y` (on the wrapper) is what keeps
+  //    that vertical scroll with the browser; we only take over the x axis.
+  //  • Mouse / pen — handled by the React pointer props on the wrapper.
+  //    A mouse drag never scrolls the page, so it needs no lock; we just
+  //    read the release. Both paths share the same distance/flick test.
+  const gridWrapRef = useRef<HTMLDivElement | null>(null);
   const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
   // Set true when a release is consumed as a swipe, so the photo's click
-  // (mouse fires one after a drag) doesn't also open the lightbox.
+  // (which can still fire after a small drag) doesn't also open the lightbox.
   const swipeConsumed = useRef(false);
 
+  // Shared decision: did this horizontal travel mean "flip the page"?
+  const applySwipe = (dx: number, dt: number) => {
+    const farEnough = Math.abs(dx) > 56;
+    const quickFlick = Math.abs(dx) > 28 && dt < 240;
+    if (!(farEnough || quickFlick)) return;
+    swipeConsumed.current = true;
+    if (dx < 0) goNextPage();
+    else goPrevPage();
+  };
+
   const onGridPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return; // touch goes through the locked path
     swipeStart.current = { x: e.clientX, y: e.clientY, t: e.timeStamp };
     swipeConsumed.current = false;
   };
 
   const onGridPointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return;
     const s = swipeStart.current;
     swipeStart.current = null;
     if (!s || pageCount <= 1) return;
     const dx = e.clientX - s.x;
     const dy = e.clientY - s.y;
-    const dt = e.timeStamp - s.t;
-    const horizontal = Math.abs(dx) > Math.abs(dy);
-    const farEnough = Math.abs(dx) > 56;
-    const quickFlick = Math.abs(dx) > 28 && dt < 240;
-    if (horizontal && (farEnough || quickFlick)) {
-      swipeConsumed.current = true;
-      if (dx < 0) goNextPage();
-      else goPrevPage();
-    }
+    if (Math.abs(dx) > Math.abs(dy)) applySwipe(dx, e.timeStamp - s.t);
   };
+
+  // Touch path with horizontal direction-lock. Registered imperatively
+  // because the touchmove listener must be { passive: false } for
+  // preventDefault to actually cancel the page scroll.
+  useEffect(() => {
+    const el = gridWrapRef.current;
+    if (!el || pageCount <= 1) return;
+
+    let sx = 0;
+    let sy = 0;
+    let st = 0;
+    let axis: "x" | "y" | null = null;
+    let tracking = false;
+
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) {
+        tracking = false;
+        return;
+      }
+      const t = e.touches[0];
+      sx = t.clientX;
+      sy = t.clientY;
+      st = e.timeStamp;
+      axis = null;
+      tracking = true;
+      swipeConsumed.current = false;
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!tracking || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+      if (axis === null) {
+        // Wait for a few px of intent before committing to an axis.
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+      if (axis === "x") e.preventDefault(); // pin the page to the swipe
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (!tracking) return;
+      tracking = false;
+      if (axis !== "x") return;
+      const t = e.changedTouches[0];
+      applySwipe(t.clientX - sx, e.timeStamp - st);
+    };
+    const stop = () => {
+      tracking = false;
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    el.addEventListener("touchcancel", stop, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", stop);
+    };
+    // applySwipe / goNextPage / goPrevPage are behaviorally stable
+    // (pageCount is constant for the page's lifetime).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageCount]);
 
   // Track the OPEN/CLOSED transition of the lightbox separately from
   // which photo is showing — every effect below depends on this boolean,
@@ -159,13 +232,14 @@ export default function GalleryPage() {
             </p>
           </motion.div>
 
-          {/* Swipe-paginated grid. Pagination is read directly from
-              pointer events (see onGridPointerDown/Up above) so the very
-              first swipe registers — no Framer `drag` priming touch
-              needed. A clearly horizontal release flips the page; anything
-              vertical-leaning is left to the browser, which scrolls the
-              page as usual thanks to touch-action: pan-y. */}
+          {/* Swipe-paginated grid. Swipes are read directly (touch via the
+              direction-locked listeners in the effect above, mouse via the
+              pointer props here) so the very first swipe registers — no
+              Framer `drag` priming touch needed — and a horizontal swipe
+              pins the page instead of dragging it up/down. Vertical gestures
+              fall through to native scroll via touch-action: pan-y. */}
           <div
+            ref={gridWrapRef}
             className="mt-12 sm:mt-16"
             onPointerDown={onGridPointerDown}
             onPointerUp={onGridPointerUp}
