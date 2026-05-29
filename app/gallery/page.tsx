@@ -47,9 +47,17 @@ export default function GalleryPage() {
     });
   };
 
-  // Keyboard navigation when lightbox is open
+  // Track the OPEN/CLOSED transition of the lightbox separately from
+  // which photo is showing — every effect below depends on this boolean,
+  // not on `active` itself, so flipping photos with the swipe / arrow keys
+  // doesn't tear down and rebuild listeners (and, critically for the
+  // back-button hook, doesn't call history.back() per swipe, which used
+  // to slam the lightbox shut on the first left/right gesture).
+  const lightboxOpen = active !== null;
+
+  // Keyboard navigation while the lightbox is open.
   useEffect(() => {
-    if (active === null) return;
+    if (!lightboxOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") goNext();
       else if (e.key === "ArrowLeft") goPrev();
@@ -58,38 +66,36 @@ export default function GalleryPage() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [lightboxOpen]);
 
-  // Lock body scroll while lightbox open
+  // Lock body scroll while the lightbox is open.
   useEffect(() => {
-    if (active === null) return;
+    if (!lightboxOpen) return;
     const prev = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
     return () => {
       document.documentElement.style.overflow = prev;
     };
-  }, [active]);
+  }, [lightboxOpen]);
 
-  // Hijack the browser back button while the lightbox is open. Pushing a
-  // synthetic history entry on open means the user's first "back" pops that
-  // entry instead of leaving the gallery page — popstate then closes the
-  // lightbox. When the user closes via UI (X button / swipe / escape), the
-  // cleanup pops the entry too so we don't leave junk in history.
+  // Browser back closes the lightbox. Push one synthetic history entry
+  // on OPEN; pop it on close — and only on close, never per photo swipe.
+  // (Previous version keyed this effect on `active`, so swiping ran the
+  // cleanup → history.back() → popstate → setActive(null) cycle and the
+  // lightbox closed on first swipe.)
   useEffect(() => {
-    if (active === null) return;
+    if (!lightboxOpen) return;
     if (typeof window === "undefined") return;
     window.history.pushState({ lightbox: true }, "");
     const onPop = () => setActive(null);
     window.addEventListener("popstate", onPop);
     return () => {
       window.removeEventListener("popstate", onPop);
-      // If our pushed entry is still on top of the stack, pop it now so the
-      // browser back button doesn't fire popstate with no effect later.
-      if (window.history.state && window.history.state.lightbox) {
+      if (window.history.state?.lightbox) {
         window.history.back();
       }
     };
-  }, [active]);
+  }, [lightboxOpen]);
 
   return (
     <main>
