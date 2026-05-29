@@ -142,58 +142,157 @@ export default function LocationPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center text-[clamp(1.5rem,5.5vw,1.875rem)] tracking-[0.04em] text-muted">
+          <p className="text-center text-[clamp(1.5rem,5.5vw,1.875rem)] font-medium tracking-[0.04em] text-muted">
             지도 앱에서 길찾기
           </p>
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
-            <motion.a
+          {/* Unified card stack — same surface, border, padding, and
+              row layout for all three actions. Brand identity is
+              compressed into a small circular badge on the left, so
+              the cards read as a coherent set instead of three
+              competing button styles. */}
+          <div className="mt-8 flex flex-col gap-3">
+            <ActionRow
               href={`https://map.naver.com/v5/search/${query}`}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ y: -3, boxShadow: "0 12px 30px rgba(16,185,129,0.25)" }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 320, damping: 22 }}
-              className="rounded-2xl bg-emerald-500 py-6 text-center text-xl font-medium text-white shadow-[0_4px_14px_rgba(16,185,129,0.18)] sm:py-8 sm:text-2xl"
-            >
-              네이버지도
-            </motion.a>
-            <motion.a
+              badgeBg="bg-[#03c75a]"
+              badgeLabel="N"
+              label="네이버지도"
+            />
+            <ActionRow
               href={`https://map.kakao.com/?q=${query}`}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ y: -3, boxShadow: "0 12px 30px rgba(252,211,77,0.4)" }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 320, damping: 22 }}
-              className="rounded-2xl bg-yellow-300 py-6 text-center text-xl font-medium text-stone-900 shadow-[0_4px_14px_rgba(252,211,77,0.3)] sm:py-8 sm:text-2xl"
-            >
-              카카오맵
-            </motion.a>
+              badgeBg="bg-[#fae100]"
+              badgeLabel="K"
+              badgeColor="text-stone-900"
+              label="카카오맵"
+            />
+            <ActionRow
+              onClick={copyAddress}
+              badgeBg="bg-accent/15"
+              icon={
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-accent"
+                  aria-hidden
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              }
+              label={
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={copyKey}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
+                    className="inline-block"
+                  >
+                    {copyLabel}
+                  </motion.span>
+                </AnimatePresence>
+              }
+            />
           </div>
-          <motion.button
-            onClick={copyAddress}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.985 }}
-            transition={{ type: "spring", stiffness: 320, damping: 22 }}
-            className="mt-3 w-full rounded-2xl border border-stone-200 bg-white py-5 text-xl text-foreground transition-colors hover:border-stone-300 sm:py-6 sm:text-2xl"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={copyKey}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="inline-block"
-              >
-                {copyLabel}
-              </motion.span>
-            </AnimatePresence>
-          </motion.button>
         </motion.div>
       </section>
 
       <SubpageNav currentHref="/location" />
     </main>
+  );
+}
+
+// Unified row component for the map-app shortcuts at the bottom of the
+// page. Same surface across "네이버지도 / 카카오맵 / 주소 복사" so they
+// read as one polished card stack instead of three loud, mismatched
+// solid-color buttons. Brand identity sits in a small left-aligned
+// circular badge; the row label runs in the page's serif type and a
+// chevron animates rightward on hover.
+function ActionRow({
+  href,
+  onClick,
+  badgeBg,
+  badgeColor,
+  badgeLabel,
+  icon,
+  label,
+}: {
+  href?: string;
+  onClick?: () => void;
+  badgeBg: string;
+  badgeColor?: string;
+  badgeLabel?: string;
+  icon?: ReactNode;
+  label: ReactNode;
+}) {
+  const shared = "group flex w-full items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-5 py-5 text-left shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 hover:border-accent/40 hover:shadow-[0_8px_24px_rgba(166,125,84,0.12)] sm:px-6 sm:py-6";
+  const inner = (
+    <>
+      <div className="flex items-center gap-4 sm:gap-5">
+        <span
+          className={`grid h-12 w-12 shrink-0 place-items-center rounded-full ${badgeBg} sm:h-14 sm:w-14`}
+        >
+          {icon ?? (
+            <span
+              className={`font-serif text-xl font-bold ${badgeColor ?? "text-white"} sm:text-2xl`}
+            >
+              {badgeLabel}
+            </span>
+          )}
+        </span>
+        <span className="text-[clamp(1.125rem,4.5vw,1.375rem)] font-medium text-foreground">
+          {label}
+        </span>
+      </div>
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="shrink-0 text-stone-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-accent"
+        aria-hidden
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </>
+  );
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 360, damping: 24 }}
+        className={shared}
+      >
+        {inner}
+      </motion.a>
+    );
+  }
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 360, damping: 24 }}
+      className={shared}
+    >
+      {inner}
+    </motion.button>
   );
 }
 

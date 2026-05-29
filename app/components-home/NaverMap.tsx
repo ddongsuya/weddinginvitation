@@ -18,6 +18,15 @@ interface NaverMaps {
       zoom: number;
       minZoom?: number;
       zoomControl?: boolean;
+      draggable?: boolean;
+      pinchZoom?: boolean;
+      scrollWheel?: boolean;
+      keyboardShortcuts?: boolean;
+      disableDoubleClickZoom?: boolean;
+      disableDoubleTapZoom?: boolean;
+      disableTwoFingerTapZoom?: boolean;
+      disableKineticPan?: boolean;
+      tileTransition?: boolean;
     }
   ) => unknown;
   Marker: new (opts: {
@@ -66,14 +75,17 @@ function OsmFrame({
   const bbox = `${lng - 0.0018},${lat - 0.0012},${lng + 0.0018},${lat + 0.0012}`;
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
   // OSM iframe shows an attribution bar at top + bottom. Crop both away
-  // by negative-margin and hidden overflow on the wrapper.
+  // by negative-margin and hidden overflow on the wrapper. We also drop
+  // pointer-events on the iframe so the page can scroll past the map
+  // without the iframe stealing the gesture — matches the Naver path
+  // which also runs as a fully-static preview.
   return (
     <div className={`${className} relative overflow-hidden`}>
       <iframe
         src={src}
         title={markerLabel ?? "지도"}
         className="absolute inset-x-0 -top-[40px] block w-full"
-        style={{ height: "calc(100% + 80px)" }}
+        style={{ height: "calc(100% + 80px)", pointerEvents: "none" }}
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
@@ -141,7 +153,19 @@ export function NaverMap({
         const map = new naverMaps.Map(mapRef.current, {
           center: new naverMaps.LatLng(lat, lng),
           zoom,
-          zoomControl: true,
+          // Fully static: user shouldn't be able to drag/zoom/pan the
+          // map. The page scroll kept "catching" on it; the only way
+          // out is to navigate through the explicit map-app buttons
+          // below.
+          draggable: false,
+          pinchZoom: false,
+          scrollWheel: false,
+          keyboardShortcuts: false,
+          disableDoubleClickZoom: true,
+          disableDoubleTapZoom: true,
+          disableTwoFingerTapZoom: true,
+          disableKineticPan: true,
+          zoomControl: false,
         });
         new naverMaps.Marker({
           position: new naverMaps.LatLng(lat, lng),
