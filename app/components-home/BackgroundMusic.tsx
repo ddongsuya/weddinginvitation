@@ -100,7 +100,11 @@ export function BackgroundMusic() {
 
   return (
     <>
-      <audio ref={audioRef} loop preload="auto">
+      {/* preload="none": the 7 MB track must NOT compete with the
+          invitation's first paint. The browser only starts fetching it
+          when tryAutoplay()/toggle() calls .play() on first interaction,
+          which is exactly when it's needed. */}
+      <audio ref={audioRef} loop preload="none">
         <source src="/audio/bgm.m4a" type="audio/mp4" />
       </audio>
 
