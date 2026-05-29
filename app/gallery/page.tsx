@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { SubpageHero } from "../components-home/SubpageHero";
@@ -45,6 +45,43 @@ export default function GalleryPage() {
       setPageDir(-1);
       return p - 1;
     });
+  };
+
+  // Grid swipe — read straight from pointer events instead of Framer's
+  // `drag` gesture. The old drag-based version needed a "priming" touch
+  // before the FIRST swipe registered: `dragDirectionLock` (meant for
+  // two-axis drags) made Framer wait to detect an axis while every photo
+  // child's own `whileTap` competed for the same pointer, and on first
+  // mount the route fade + staggered entrance were still animating — so
+  // the opening gesture got swallowed. Plain pointerdown/up is live from
+  // the very first frame: record where the finger lands, and on release
+  // page the grid if the movement was clearly horizontal. `touch-action:
+  // pan-y` (below) still hands vertical scrolling to the browser.
+  const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  // Set true when a release is consumed as a swipe, so the photo's click
+  // (mouse fires one after a drag) doesn't also open the lightbox.
+  const swipeConsumed = useRef(false);
+
+  const onGridPointerDown = (e: React.PointerEvent) => {
+    swipeStart.current = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+    swipeConsumed.current = false;
+  };
+
+  const onGridPointerUp = (e: React.PointerEvent) => {
+    const s = swipeStart.current;
+    swipeStart.current = null;
+    if (!s || pageCount <= 1) return;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    const dt = e.timeStamp - s.t;
+    const horizontal = Math.abs(dx) > Math.abs(dy);
+    const farEnough = Math.abs(dx) > 56;
+    const quickFlick = Math.abs(dx) > 28 && dt < 240;
+    if (horizontal && (farEnough || quickFlick)) {
+      swipeConsumed.current = true;
+      if (dx < 0) goNextPage();
+      else goPrevPage();
+    }
   };
 
   // Track the OPEN/CLOSED transition of the lightbox separately from
@@ -122,25 +159,18 @@ export default function GalleryPage() {
             </p>
           </motion.div>
 
-          {/* Swipe-paginated grid. `dragDirectionLock` is the key piece —
-              framer detects the dominant axis of the initial finger
-              movement and locks to it. A clean horizontal swipe pages the
-              grid (and preventDefaults the touch so the body doesn't
-              scroll under it); a vertical-leaning gesture is left
-              entirely to the browser, which scrolls the page as usual
-              thanks to touch-action: pan-y. Net effect: page-flip
-              gestures feel "snapped" along x, with zero vertical wobble. */}
-          <motion.div
+          {/* Swipe-paginated grid. Pagination is read directly from
+              pointer events (see onGridPointerDown/Up above) so the very
+              first swipe registers — no Framer `drag` priming touch
+              needed. A clearly horizontal release flips the page; anything
+              vertical-leaning is left to the browser, which scrolls the
+              page as usual thanks to touch-action: pan-y. */}
+          <div
             className="mt-12 sm:mt-16"
-            drag={pageCount > 1 ? "x" : false}
-            dragDirectionLock
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.18}
-            dragSnapToOrigin
-            onDragEnd={(_, info) => {
-              const swipe = Math.abs(info.offset.x) * info.velocity.x;
-              if (info.offset.x < -80 || swipe < -10000) goNextPage();
-              else if (info.offset.x > 80 || swipe > 10000) goPrevPage();
+            onPointerDown={onGridPointerDown}
+            onPointerUp={onGridPointerUp}
+            onPointerCancel={() => {
+              swipeStart.current = null;
             }}
             style={{ touchAction: "pan-y" }}
           >
@@ -168,6 +198,12 @@ export default function GalleryPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: i * 0.04 }}
                       onClick={() => {
+                        // A horizontal swipe ends in a click on desktop;
+                        // don't let that also open the lightbox.
+                        if (swipeConsumed.current) {
+                          swipeConsumed.current = false;
+                          return;
+                        }
                         setDirection(1);
                         setActive(absoluteIndex);
                       }}
@@ -190,7 +226,7 @@ export default function GalleryPage() {
                 })}
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+          </div>
 
           {pageCount > 1 && (
             <div className="mt-12 flex flex-col items-center gap-4 sm:mt-16">
