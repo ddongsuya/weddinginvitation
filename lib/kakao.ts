@@ -1,5 +1,9 @@
 import { weddingData } from "./data";
 import { resolveSiteUrl } from "./site-url";
+// (buildCalendarUrl was removed — calendar link now points at our own
+// /calendar route which serves an iCalendar (.ics) file. See that route
+// for the rationale; in short, Kakao's button link policy blocks
+// external domains and .ics is the universal native-calendar format.)
 
 interface KakaoShareApi {
   Share: {
@@ -61,25 +65,6 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
   });
 }
 
-// Build a Google Calendar "Add Event" URL.
-// Wedding day spec: 2026-08-29 12:30 KST (= 03:30 UTC), 2-hour event.
-function buildCalendarUrl(): string {
-  const title = `${weddingData.groom.name} ♥ ${weddingData.bride.name} 결혼식`;
-  const details = `${weddingData.date.display}\n${weddingData.venue.name} ${weddingData.venue.hall}`;
-  const location = `${weddingData.venue.name}, ${weddingData.venue.address}`;
-  // UTC times so the event lands at 12:30 KST regardless of viewer's timezone
-  const start = "20260829T033000Z";
-  const end = "20260829T053000Z";
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: title,
-    dates: `${start}/${end}`,
-    details,
-    location,
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
-
 export async function shareInvitation(): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
@@ -94,7 +79,12 @@ export async function shareInvitation(): Promise<void> {
     // The user's 1:1 design sits 630×630 in the middle, cream
     // 285px-wide bars on either side blending into the page palette.
     const imageUrl = `${siteUrl}/photos/share-card-v2.jpg`;
-    const calendarUrl = buildCalendarUrl();
+    // Same-domain endpoint that returns an .ics file. Kakao's button
+    // link allowlist blocks external domains (google.com etc.), and
+    // .ics is what triggers the OS-native "Add to Calendar" prompt —
+    // iOS opens Apple Calendar, Android opens whatever the user set
+    // as default. See app/calendar/route.ts.
+    const calendarUrl = `${siteUrl}/calendar`;
 
     // Format the date as the spec asks: 2026.08.29 (토) 12:30 여수히든베이호텔
     const { year, month, day, hour, minute, weekday } = weddingData.date;
