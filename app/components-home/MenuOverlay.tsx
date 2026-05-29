@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { weddingData } from "@/lib/data";
 import { loadKakaoSdk, shareInvitation } from "@/lib/kakao";
 
 export const MENU_ITEMS = [
@@ -75,23 +74,27 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
             }}
           >
+            {/* Pill buttons matched to NavShell's main-page header — same
+                padding, same font size, same border treatment. Over the
+                dark menu overlay the pills use white/10 bg + white/25
+                border instead of NavShell's stone-900 fill so they
+                remain visible. */}
             <button
               type="button"
               onClick={goHome}
-              className="font-serif text-sm tracking-wide text-white/80 transition-colors hover:text-white sm:text-base"
+              className="rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg tracking-wide text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 sm:px-6 sm:py-3.5 sm:text-xl"
             >
-              {weddingData.groom.name} &nbsp;&amp;&nbsp;{" "}
-              {weddingData.bride.name}
+              처음으로
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex items-center gap-2.5 font-sans text-xs text-white sm:text-sm"
+              className="flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 sm:gap-3.5 sm:px-6 sm:py-3.5 sm:text-xl"
               aria-label="메뉴 닫기"
             >
-              <span className="relative h-4 w-4">
-                <span className="absolute left-0 top-1/2 h-px w-4 -translate-y-1/2 rotate-45 bg-white" />
-                <span className="absolute left-0 top-1/2 h-px w-4 -translate-y-1/2 -rotate-45 bg-white" />
+              <span className="relative h-5 w-5 sm:h-6 sm:w-6">
+                <span className="absolute left-0 top-1/2 h-[2px] w-5 -translate-y-1/2 rotate-45 bg-white sm:w-6" />
+                <span className="absolute left-0 top-1/2 h-[2px] w-5 -translate-y-1/2 -rotate-45 bg-white sm:w-6" />
               </span>
               닫기
             </button>
@@ -193,7 +196,7 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
             }}
           >
-            <p className="font-serif text-[13px] tracking-[0.12em] text-white/70 sm:text-sm">
+            <p className="font-serif text-lg tracking-[0.08em] text-white/85 sm:text-xl">
               2026.08.29 (토) 히든베이호텔
             </p>
           </footer>
