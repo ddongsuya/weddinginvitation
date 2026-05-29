@@ -1,17 +1,19 @@
 // Calendar event endpoint — returns an RFC 5545 iCalendar (.ics) file.
 //
-// Why .ics instead of Google Calendar's `/render?action=TEMPLATE` URL:
-//   - KakaoTalk's button-link policy blocks external domains; only URLs
-//     on the registered app domain pass through, so a google.com link
-//     gets silently rewritten to our homepage. By serving the calendar
-//     from `/calendar` we stay on-domain.
-//   - .ics is the universal calendar interchange format. iOS opens it
-//     with Apple Calendar, Android opens it with Google Calendar (or
-//     whichever calendar app the user set as default) — both via the
-//     OS's native "Add to Calendar" sheet. No assumptions about which
-//     calendar service the guest uses.
+// Why .ics: it's the universal calendar interchange format. iOS opens
+// it with Apple Calendar's "Add Event" sheet, Android opens whatever
+// calendar app the user set as default — both via the OS's native
+// handler, with no assumption about which calendar service the guest
+// uses (per user's "구글 캘린더 말고 안드로이드와 ios 각 기본 캘린더
+// 앱으로 연결" request).
 //
-// Bump UID if the event ever moves; calendar apps de-dupe by UID.
+// Why this lives under /api/calendar instead of /calendar: the bare
+// /calendar URL is now an HTML landing page that gives the guest an
+// explicit "캘린더에 추가" button. Direct .ics downloads from inside
+// KakaoTalk's in-app browser sometimes just drop the file in the
+// device's Downloads folder without ever triggering the system's
+// "Add to Calendar" handler, which is what made guests think the
+// button was broken.
 
 import { weddingData } from "@/lib/data";
 
@@ -31,14 +33,9 @@ function buildIcs(): string {
   const description = `${weddingData.date.display}\n${weddingData.venue.name} ${weddingData.venue.hall}`;
   const location = `${weddingData.venue.name}, ${weddingData.venue.address}`;
 
-  // 2026-08-29 12:30 KST = 03:30 UTC; 2-hour duration ends at 05:30 UTC.
-  // Times encoded in UTC so the event lands at 12:30 local time for any
-  // viewer regardless of the device timezone Calendar reads from.
+  // 2026-08-29 12:30 KST = 03:30 UTC; 2-hour duration.
   const dtstart = "20260829T033000Z";
   const dtend = "20260829T053000Z";
-  // Fixed timestamp for the iCal record's creation; using the wedding's
-  // announcement month so the file stays byte-stable across rebuilds
-  // (avoids spurious "event updated" notifications on subscribers).
   const dtstamp = "20260101T000000Z";
 
   const lines = [
@@ -68,7 +65,6 @@ export async function GET(): Promise<Response> {
   return new Response(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      // Filename ASCII-only so every browser/in-app webview can save it.
       "Content-Disposition": 'attachment; filename="wedding.ics"',
       "Cache-Control": "public, max-age=3600, s-maxage=86400",
     },
