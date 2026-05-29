@@ -244,13 +244,15 @@ export default function CalendarPage() {
                 위 버튼을 눌러주세요.
               </p>
 
-              <button
+              <motion.button
                 type="button"
                 onClick={goToInvitation}
-                className="mt-6 inline-block font-serif text-base text-muted underline underline-offset-4 transition-colors hover:text-foreground sm:text-lg"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-5 grid w-full place-items-center rounded-full border-2 border-stone-300 bg-white px-6 py-5 font-serif text-[clamp(1.125rem,5vw,1.5rem)] font-medium text-foreground shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-colors hover:border-accent hover:text-accent"
               >
                 청첩장으로 돌아가기
-              </button>
+              </motion.button>
             </motion.div>
           )}
 
