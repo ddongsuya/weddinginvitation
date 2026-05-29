@@ -122,13 +122,18 @@ export default function GalleryPage() {
             </p>
           </motion.div>
 
-          {/* Swipe-paginated grid. The outer motion.div captures horizontal
-              drag (touch-action: pan-y keeps vertical scroll working). The
-              inner AnimatePresence slides the page in from the dragged
-              direction so the gesture feels physical. */}
+          {/* Swipe-paginated grid. `dragDirectionLock` is the key piece —
+              framer detects the dominant axis of the initial finger
+              movement and locks to it. A clean horizontal swipe pages the
+              grid (and preventDefaults the touch so the body doesn't
+              scroll under it); a vertical-leaning gesture is left
+              entirely to the browser, which scrolls the page as usual
+              thanks to touch-action: pan-y. Net effect: page-flip
+              gestures feel "snapped" along x, with zero vertical wobble. */}
           <motion.div
             className="mt-12 sm:mt-16"
             drag={pageCount > 1 ? "x" : false}
+            dragDirectionLock
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.18}
             dragSnapToOrigin
@@ -428,6 +433,12 @@ export default function GalleryPage() {
                   exit="leave"
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   drag
+                  // Lock to whichever axis the finger starts moving on.
+                  // Without this the photo wobbles diagonally during a
+                  // horizontal swipe (and vice-versa during a close
+                  // gesture). With it, the photo glides cleanly along
+                  // one axis at a time.
+                  dragDirectionLock
                   dragConstraints={{
                     left: 0,
                     right: 0,
@@ -440,6 +451,9 @@ export default function GalleryPage() {
                     const { offset, velocity } = info;
                     const swipeX = Math.abs(offset.x) * velocity.x;
                     const swipeY = Math.abs(offset.y) * velocity.y;
+                    // With dragDirectionLock, one of these will be ~0,
+                    // so the comparison still correctly picks the
+                    // user's intent.
                     const verticalDominant =
                       Math.abs(offset.y) > Math.abs(offset.x);
 

@@ -170,6 +170,7 @@ export function HeroSlideshow() {
         aria-hidden
         className="absolute inset-x-0 top-0 z-10 bottom-20"
         drag="x"
+        dragDirectionLock
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.18}
         dragSnapToOrigin
