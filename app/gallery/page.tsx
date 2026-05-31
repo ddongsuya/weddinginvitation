@@ -207,6 +207,102 @@ export default function GalleryPage() {
     };
   }, [lightboxOpen]);
 
+  // Lightbox swipe — the SAME direction-locked, no-drift gesture as the
+  // grid, applied to the enlarged photo. The old version used Framer's
+  // `drag`, so the photo rubber-banded under the finger and could wobble
+  // before snapping back. Now we just read the gesture: a clearly
+  // horizontal swipe flips to the prev/next photo (the AnimatePresence
+  // slide below provides the motion), a clearly vertical swipe dismisses
+  // the overlay. Touch runs through the locked native listeners so the
+  // photo never drifts; mouse/pen use the pointer props on the stage.
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const lbStart = useRef<{ x: number; y: number; t: number } | null>(null);
+
+  const applyLightboxGesture = (dx: number, dy: number, dt: number) => {
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Horizontal → prev / next
+      if (Math.abs(dx) > 60 || (Math.abs(dx) > 30 && dt < 250)) {
+        if (dx < 0) goNext();
+        else goPrev();
+      }
+    } else {
+      // Vertical (either direction) → dismiss the overlay
+      if (Math.abs(dy) > 90 || (Math.abs(dy) > 45 && dt < 260)) close();
+    }
+  };
+
+  const onStagePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return; // touch goes through the locked path
+    lbStart.current = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+  };
+  const onStagePointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return;
+    const s = lbStart.current;
+    lbStart.current = null;
+    if (!s) return;
+    applyLightboxGesture(e.clientX - s.x, e.clientY - s.y, e.timeStamp - s.t);
+  };
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const el = stageRef.current;
+    if (!el) return;
+
+    let sx = 0;
+    let sy = 0;
+    let st = 0;
+    let axis: "x" | "y" | null = null;
+    let tracking = false;
+
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) {
+        tracking = false;
+        return;
+      }
+      const t = e.touches[0];
+      sx = t.clientX;
+      sy = t.clientY;
+      st = e.timeStamp;
+      axis = null;
+      tracking = true;
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!tracking || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+      if (axis === null) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+      // Pin the photo — nothing should drift while swiping.
+      e.preventDefault();
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (!tracking) return;
+      tracking = false;
+      if (axis === null) return;
+      const t = e.changedTouches[0];
+      applyLightboxGesture(t.clientX - sx, t.clientY - sy, e.timeStamp - st);
+    };
+    const stop = () => {
+      tracking = false;
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    el.addEventListener("touchcancel", stop, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", stop);
+    };
+    // goNext / goPrev / close are behaviorally stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxOpen]);
+
   return (
     <main>
       <SubpageHero
@@ -516,10 +612,21 @@ export default function GalleryPage() {
               </motion.svg>
             </motion.button>
 
-            {/* Photo (swipe + slide on prev/next) — full viewport */}
+            {/* Photo (swipe + slide on prev/next) — full viewport.
+                Touch swipes run through the direction-locked native
+                listeners on this stage (touch-action: none so the browser
+                never scrolls/zooms mid-gesture); mouse/pen use the pointer
+                props. The inner motion.div only does the slide animation. */}
             <div
+              ref={stageRef}
               className="absolute inset-0 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
+              onPointerDown={onStagePointerDown}
+              onPointerUp={onStagePointerUp}
+              onPointerCancel={() => {
+                lbStart.current = null;
+              }}
+              style={{ touchAction: "none" }}
             >
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
@@ -542,48 +649,7 @@ export default function GalleryPage() {
                   animate="center"
                   exit="leave"
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  drag
-                  // Lock to whichever axis the finger starts moving on.
-                  // Without this the photo wobbles diagonally during a
-                  // horizontal swipe (and vice-versa during a close
-                  // gesture). With it, the photo glides cleanly along
-                  // one axis at a time.
-                  dragDirectionLock
-                  dragConstraints={{
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                  }}
-                  dragElastic={0.22}
-                  dragSnapToOrigin
-                  onDragEnd={(_, info) => {
-                    const { offset, velocity } = info;
-                    const swipeX = Math.abs(offset.x) * velocity.x;
-                    const swipeY = Math.abs(offset.y) * velocity.y;
-                    // With dragDirectionLock, one of these will be ~0,
-                    // so the comparison still correctly picks the
-                    // user's intent.
-                    const verticalDominant =
-                      Math.abs(offset.y) > Math.abs(offset.x);
-
-                    // Vertical (up or down) → close. Same threshold either way
-                    // because the user's intent is "dismiss this overlay."
-                    if (
-                      verticalDominant &&
-                      (Math.abs(offset.y) > 110 ||
-                        Math.abs(swipeY) > 10000)
-                    ) {
-                      close();
-                      return;
-                    }
-
-                    // Horizontal → navigate
-                    if (offset.x < -80 || swipeX < -10000) goNext();
-                    else if (offset.x > 80 || swipeX > 10000) goPrev();
-                  }}
                   className="absolute inset-0 flex items-center justify-center px-4 sm:px-12"
-                  style={{ touchAction: "none" }}
                 >
                   <Image
                     src={weddingData.gallery[active].src}
