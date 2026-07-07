@@ -78,6 +78,10 @@ export default function WishesPage() {
   );
 }
 
+/* REDESIGN(2g 채택): 카드 속 회색 카드 → 헤어라인 리스트 한 장.
+   - 헤더: 손글씨 라벨 + "N개 계좌" 캡션
+   - 행: "은행 · 예금주" 한 줄 캡션 + 계좌번호(주인공, truncate 없음)
+   - 복사: 알약 버튼 → 아이콘 + 텍스트 버튼 */
 function SideToggle({
   label,
   isOpen,
@@ -90,15 +94,20 @@ function SideToggle({
   accounts: readonly Account[];
 }) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-stone-200/80 bg-white">
+    <div className="overflow-hidden rounded-3xl border border-stone-300/50 bg-white">
       <button
         onClick={onClick}
-        className="flex w-full items-center justify-between px-6 py-5 text-left sm:px-8 sm:py-6"
+        className="flex w-full items-center justify-between px-6 py-5 text-left transition-colors active:bg-stone-50 sm:px-8 sm:py-6"
         aria-expanded={isOpen}
       >
-        <p className="font-serif text-[clamp(1.75rem,7vw,2.5rem)] tracking-[0.05em] text-foreground">
-          {label}
-        </p>
+        <span className="flex items-baseline gap-3">
+          <span className="font-hand text-[clamp(1.75rem,7vw,2.5rem)] font-medium text-foreground">
+            {label}
+          </span>
+          <span className="font-serif text-[clamp(0.85rem,3.2vw,1rem)] text-stone-400">
+            {accounts.length}개 계좌
+          </span>
+        </span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
@@ -127,7 +136,7 @@ function SideToggle({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="space-y-2 px-4 pb-5 sm:px-6 sm:pb-6">
+            <div>
               {accounts.map((acc) => (
                 <AccountRow key={`${acc.bank}-${acc.number}`} account={acc} />
               ))}
@@ -187,31 +196,35 @@ function AccountRow({ account }: { account: Account }) {
   const buttonKey = failed ? "f" : copied ? "y" : "n";
 
   return (
-    <motion.div
-      whileHover={{ backgroundColor: "rgb(245 245 244)" }}
-      transition={{ duration: 0.3 }}
-      className="flex items-center justify-between gap-3 rounded-2xl bg-stone-50 px-4 py-4 sm:px-6"
-    >
+    <div className="flex items-center justify-between gap-3.5 border-t border-stone-200/80 px-6 py-4 transition-colors active:bg-stone-50 sm:px-8 sm:py-5">
       <div className="min-w-0">
-        <p className="text-[clamp(1.1rem,4.5vw,1.375rem)] tracking-wide text-muted">
-          {account.holder}
+        <p className="font-serif text-[clamp(0.9rem,3.6vw,1.05rem)] tracking-wide text-stone-500">
+          {account.bank} · {account.holder}
         </p>
-        {/* Bank + account number stacked so the number isn't truncated
-            by the larger type. Number sits on its own line, full width. */}
-        <p className="mt-1 font-medium text-[clamp(1rem,4vw,1.25rem)] tracking-wide text-accent">
-          {account.bank}
-        </p>
-        <p className="mt-0.5 truncate text-[clamp(1.25rem,5vw,1.625rem)] leading-relaxed tracking-[-0.005em] text-foreground tabular-nums">
+        <p className="mt-1.5 text-[clamp(1.2rem,4.8vw,1.5rem)] leading-relaxed tracking-[0.01em] text-foreground tabular-nums">
           {account.number}
         </p>
       </div>
-      <motion.button
+      <button
         onClick={copy}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.92 }}
-        transition={{ type: "spring", stiffness: 380, damping: 18 }}
-        className="ml-3 shrink-0 rounded-full border border-stone-200 bg-white px-5 py-2.5 font-sans text-lg text-foreground transition-colors hover:border-accent/40 hover:text-accent"
+        className={`flex shrink-0 items-center gap-1.5 py-2.5 pl-1 font-serif text-[clamp(1rem,4vw,1.125rem)] transition-colors ${
+          copied ? "text-accent" : "text-stone-500 hover:text-accent"
+        }`}
       >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={buttonKey}
@@ -224,7 +237,7 @@ function AccountRow({ account }: { account: Account }) {
             {buttonLabel}
           </motion.span>
         </AnimatePresence>
-      </motion.button>
-    </motion.div>
+      </button>
+    </div>
   );
 }

@@ -38,11 +38,13 @@ export function MenuOverlay({
     };
   }, [open]);
 
+  // FIX(반응성): 기존에는 onClose 후 setTimeout(350ms) 뒤에 push해서
+  // 탭 → 이동 사이에 아무 일도 안 일어나는 공백이 있었음.
+  // 즉시 push하고, 오버레이 페이드아웃(0.4s)은 새 페이지가 뜨는 동안
+  // 겹쳐서 재생 — 체감 이동이 ~750ms → 즉시로.
   const handleNavClick = (href: string) => {
+    router.push(href);
     onClose();
-    setTimeout(() => {
-      router.push(href);
-    }, 350);
   };
 
   const handleShareClick = () => {
@@ -50,8 +52,8 @@ export function MenuOverlay({
   };
 
   const goHome = () => {
+    router.push("/");
     onClose();
-    setTimeout(() => router.push("/"), 350);
   };
 
   return (
@@ -74,22 +76,17 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
             }}
           >
-            {/* Pill buttons matched to NavShell's main-page header — same
-                padding, same font size, same border treatment. Over the
-                dark menu overlay the pills use white/10 bg + white/25
-                border instead of NavShell's stone-900 fill so they
-                remain visible. */}
             <button
               type="button"
               onClick={goHome}
-              className="rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg tracking-wide text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 sm:px-6 sm:py-3.5 sm:text-xl"
+              className="rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg tracking-wide text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 active:bg-white/25 sm:px-6 sm:py-3.5 sm:text-xl"
             >
               처음으로
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 sm:gap-3.5 sm:px-6 sm:py-3.5 sm:text-xl"
+              className="flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 active:bg-white/25 sm:gap-3.5 sm:px-6 sm:py-3.5 sm:text-xl"
               aria-label="메뉴 닫기"
             >
               <span className="relative h-5 w-5 sm:h-6 sm:w-6">

@@ -86,6 +86,11 @@ export default function WeddingDayPage() {
         </div>
       </section>
 
+      {/* REDESIGN(2d 채택): 달력을 팔레트 안으로.
+          - "달력" 라벨과 "2026 . 08" 헤더 제거 → 손글씨 "2026년 8월"
+          - 장미색/하늘색 요일 → 잉크 단색 + 일요일만 은은한 적갈(#b0685c)
+          - 예식일 29: 무한 펄스 링 제거 → 정적 원 + 작은 하트
+            (상시 애니메이션 1개 감소 — 배터리/발열) */}
       <section className="px-4 pb-28 sm:px-8 sm:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -94,23 +99,14 @@ export default function WeddingDayPage() {
           transition={{ duration: 0.9 }}
           className="mx-auto max-w-md"
         >
-          <p className="text-center font-serif text-[clamp(1.25rem,5vw,1.5rem)] tracking-[0.2em] text-muted">
-            달력
+          <p className="text-center font-hand text-[clamp(1.875rem,7vw,2.25rem)] font-medium tracking-[0.02em] text-foreground">
+            {year}년 {month}월
           </p>
-          <div className="mt-4 text-center font-serif text-[clamp(1.75rem,6.5vw,2.25rem)] tracking-[0.25em] text-foreground">
-            {year} . {String(month).padStart(2, "0")}
-          </div>
-          <div className="mt-6 grid grid-cols-7 gap-y-3 text-center text-[clamp(1.1rem,4.5vw,1.375rem)]">
-            {DAYS.map((d, i) => (
+          <div className="mt-7 grid grid-cols-7 gap-y-3.5 text-center">
+            {DAYS.map((d) => (
               <div
                 key={d}
-                className={`pb-2 font-medium tracking-wider ${
-                  i === 0
-                    ? "text-rose-500"
-                    : i === 6
-                      ? "text-sky-500"
-                      : "text-muted"
-                }`}
+                className="pb-1.5 font-serif text-[clamp(0.8rem,3vw,0.9rem)] tracking-[0.18em] text-stone-400"
               >
                 {d}
               </div>
@@ -124,43 +120,27 @@ export default function WeddingDayPage() {
                     key={i}
                     className="relative flex h-9 items-center justify-center sm:h-10"
                   >
-                    <motion.span
-                      animate={{
-                        scale: [1, 1.18, 1],
-                        opacity: [0.5, 0, 0.5],
-                      }}
-                      transition={{
-                        duration: 2.6,
-                        repeat: Infinity,
-                        ease: "easeOut",
-                      }}
-                      className="absolute inset-0 rounded-full bg-accent"
-                    />
-                    <motion.span
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{
-                        duration: 2.6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      className="relative grid h-9 w-9 place-items-center rounded-full bg-accent text-white shadow-[0_4px_18px_rgba(176,137,104,0.45)] sm:h-10 sm:w-10"
-                    >
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-accent text-white shadow-[0_4px_14px_rgba(166,125,84,0.4)] tabular-nums sm:h-10 sm:w-10">
                       {c}
-                    </motion.span>
+                    </span>
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-accent"
+                    >
+                      ♥
+                    </span>
                   </div>
                 );
               }
               return (
                 <div
                   key={i}
-                  className={`flex h-9 items-center justify-center tabular-nums sm:h-10 ${
+                  className={`flex h-9 items-center justify-center text-[clamp(1rem,4.2vw,1.2rem)] tabular-nums sm:h-10 ${
                     c === null
                       ? "text-transparent"
                       : weekday === 0
-                        ? "text-rose-500"
-                        : weekday === 6
-                          ? "text-sky-500"
-                          : "text-foreground"
+                        ? "text-[#b0685c]"
+                        : "text-foreground/80"
                   }`}
                 >
                   {c ?? "."}
@@ -168,6 +148,9 @@ export default function WeddingDayPage() {
               );
             })}
           </div>
+          <p className="mt-9 text-center font-serif text-[clamp(1rem,4vw,1.125rem)] tracking-[0.06em] text-muted">
+            토요일 낮 12시 30분
+          </p>
         </motion.div>
       </section>
 
@@ -179,7 +162,7 @@ export default function WeddingDayPage() {
           transition={{ duration: 0.8 }}
           className="mx-auto max-w-3xl"
         >
-          <p className="text-center font-serif text-[clamp(1.875rem,7vw,2.5rem)] font-medium tracking-[0.15em] text-accent">
+          <p className="text-center font-hand text-[clamp(1.875rem,7vw,2.5rem)] font-medium tracking-[0.15em] text-accent">
             결혼식까지
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3 text-center sm:gap-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SubpageHero } from "../components-home/SubpageHero";
 import { SubpageNav } from "../components-home/SubpageNav";
@@ -31,12 +31,6 @@ export default function LocationPage() {
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
   const { venue } = weddingData;
-  // Map-app search query — just the venue name. Including the full
-  // address made the search bar populate with the entire string
-  // ("여수 히든베이호텔 전라남도 여수시 신월로 496-25 히든베이호텔
-  // 그랜드볼룸 웨딩홀 지하 2층"), which both Naver/Kakao maps fail to
-  // resolve cleanly. The short venue name lands on the correct hotel
-  // pin every time.
   const query = encodeURIComponent(venue.name);
   const { lat, lng } = venue.coordinates;
   const telDigits = venue.tel.replace(/-/g, "");
@@ -64,7 +58,7 @@ export default function LocationPage() {
     ? "복사 실패"
     : copied
       ? "주소가 복사되었습니다"
-      : "주소 복사";
+      : "주소 복사하기";
   const copyKey = failed ? "f" : copied ? "y" : "n";
 
   return (
@@ -77,7 +71,6 @@ export default function LocationPage() {
 
       <section className="px-4 py-28 sm:px-8 sm:py-36">
         <div className="mx-auto max-w-3xl">
-          {/* 1. 식장 이름 + 홀 이름 */}
           <div className="text-center">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -99,7 +92,6 @@ export default function LocationPage() {
             </motion.p>
           </div>
 
-          {/* 2. 정보 블록 — 주소 / 전화번호 / 주차장 안내 */}
           <motion.dl
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +114,6 @@ export default function LocationPage() {
             <InfoRow label="주차장 안내" value={venue.parking} />
           </motion.dl>
 
-          {/* 3. 지도 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -140,72 +131,49 @@ export default function LocationPage() {
         </div>
       </section>
 
-      <section className="px-4 pb-20 sm:px-8 sm:pb-28">
+      {/* REDESIGN(2b 채택): "지도 앱에서 길찾기" 제목 + 브랜드 배지 카드
+          3장 → 카드 없는 헤어라인 텍스트 리스트. 버튼처럼 안 보이는
+          조용한 행 — 본문(InfoRow)과 같은 시각 언어. */}
+      <section className="px-6 pb-20 sm:px-8 sm:pb-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8 }}
-          className="mx-auto max-w-3xl"
+          className="mx-auto max-w-xl"
         >
-          <p className="text-center text-[clamp(1.5rem,5.5vw,1.875rem)] font-medium tracking-[0.04em] text-muted">
-            지도 앱에서 길찾기
+          <p className="mb-1 font-serif text-[clamp(0.95rem,3.5vw,1.05rem)] tracking-[0.28em] text-accent">
+            길찾기
           </p>
-          {/* Unified card stack — same surface, border, padding, and
-              row layout for all three actions. Brand identity is
-              compressed into a small circular badge on the left, so
-              the cards read as a coherent set instead of three
-              competing button styles. */}
-          <div className="mt-8 flex flex-col gap-3">
-            <ActionRow
-              href={`https://map.naver.com/v5/search/${query}`}
-              badgeBg="bg-[#03c75a]"
-              badgeLabel="N"
-              label="네이버지도"
-            />
-            <ActionRow
-              href={`https://map.kakao.com/?q=${query}`}
-              badgeBg="bg-[#fae100]"
-              badgeLabel="K"
-              badgeColor="text-stone-900"
-              label="카카오맵"
-            />
-            <ActionRow
-              onClick={copyAddress}
-              badgeBg="bg-accent/15"
-              icon={
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-accent"
-                  aria-hidden
+          <WayRow
+            href={`https://map.naver.com/v5/search/${query}`}
+            label="네이버지도로 길찾기"
+            kind="external"
+          />
+          <WayRow
+            href={`https://map.kakao.com/?q=${query}`}
+            label="카카오맵으로 길찾기"
+            kind="external"
+          />
+          <WayRow
+            onClick={copyAddress}
+            kind="copy"
+            last
+            label={
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copyKey}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}
+                  className={`inline-block ${copied ? "text-accent" : ""}`}
                 >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-              }
-              label={
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={copyKey}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.25 }}
-                    className="inline-block"
-                  >
-                    {copyLabel}
-                  </motion.span>
-                </AnimatePresence>
-              }
-            />
-          </div>
+                  {copyLabel}
+                </motion.span>
+              </AnimatePresence>
+            }
+          />
         </motion.div>
       </section>
 
@@ -214,103 +182,92 @@ export default function LocationPage() {
   );
 }
 
-// Unified row component for the map-app shortcuts at the bottom of the
-// page. Same surface across "네이버지도 / 카카오맵 / 주소 복사" so they
-// read as one polished card stack instead of three loud, mismatched
-// solid-color buttons. Brand identity sits in a small left-aligned
-// circular badge; the row label runs in the page's serif type and a
-// chevron animates rightward on hover.
-function ActionRow({
+// 2b 스타일 공용 행 — 텍스트 + 헤어라인 + 우측 작은 아이콘.
+function WayRow({
   href,
   onClick,
-  badgeBg,
-  badgeColor,
-  badgeLabel,
-  icon,
   label,
+  kind,
+  last,
 }: {
   href?: string;
-  onClick?: () => void;
-  badgeBg: string;
-  badgeColor?: string;
-  badgeLabel?: string;
-  icon?: ReactNode;
-  label: ReactNode;
+  onClick?: () => void | Promise<void>;
+  label: React.ReactNode;
+  kind: "external" | "copy";
+  last?: boolean;
 }) {
-  const shared = "group flex w-full items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-5 py-5 text-left shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 hover:border-accent/40 hover:shadow-[0_8px_24px_rgba(166,125,84,0.12)] sm:px-6 sm:py-6";
-  const inner = (
-    <>
-      <div className="flex items-center gap-4 sm:gap-5">
-        <span
-          className={`grid h-12 w-12 shrink-0 place-items-center rounded-full ${badgeBg} sm:h-14 sm:w-14`}
-        >
-          {icon ?? (
-            <span
-              className={`font-serif text-xl font-bold ${badgeColor ?? "text-white"} sm:text-2xl`}
-            >
-              {badgeLabel}
-            </span>
-          )}
-        </span>
-        <span className="text-[clamp(1.125rem,4.5vw,1.375rem)] font-medium text-foreground">
-          {label}
-        </span>
-      </div>
+  const cls = `group flex w-full items-center justify-between gap-4 py-5 text-left transition-colors active:bg-stone-100/60 ${
+    last ? "" : "border-b border-stone-300/50"
+  }`;
+  const icon =
+    kind === "external" ? (
       <svg
-        width="22"
-        height="22"
+        width="17"
+        height="17"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.7"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="shrink-0 text-stone-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-accent"
+        className="shrink-0 text-stone-400 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
         aria-hidden
       >
-        <path d="M9 18l6-6-6-6" />
+        <path d="M7 17 17 7" />
+        <path d="M8 7h9v9" />
       </svg>
+    ) : (
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="shrink-0 text-stone-400 transition-colors group-hover:text-accent"
+        aria-hidden
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+    );
+  const inner = (
+    <>
+      <span className="text-[clamp(1.25rem,5vw,1.5rem)] text-foreground">
+        {label}
+      </span>
+      {icon}
     </>
   );
 
   if (href) {
     return (
-      <motion.a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        whileHover={{ y: -2 }}
-        whileTap={{ scale: 0.985 }}
-        transition={{ type: "spring", stiffness: 360, damping: 24 }}
-        className={shared}
-      >
+      <a href={href} target="_blank" rel="noreferrer" className={cls}>
         {inner}
-      </motion.a>
+      </a>
     );
   }
   return (
-    <motion.button
+    <button
       type="button"
-      onClick={onClick}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 360, damping: 24 }}
-      className={shared}
+      onClick={() => {
+        void onClick?.();
+      }}
+      className={cls}
     >
       {inner}
-    </motion.button>
+    </button>
   );
 }
 
-// Definition-list style row used for the 주소 / 전화번호 / 주차장 안내 block.
-// Label sits left in muted serif; value flows right. On narrow screens the
-// pair stacks so long Korean addresses don't get squashed.
 function InfoRow({
   label,
   value,
 }: {
   label: string;
-  value: ReactNode;
+  value: React.ReactNode;
 }) {
   return (
     <div className="grid grid-cols-[7.5rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-stone-200/70 pb-5 last:border-b-0 last:pb-0 sm:grid-cols-[9rem_1fr]">

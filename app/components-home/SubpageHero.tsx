@@ -15,9 +15,6 @@ interface SubpageHeroProps {
 
 export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
   const [loaded, setLoaded] = useState(false);
-  // Shared height across all heroes in the session — see
-  // useStableHeroHeight for why measuring per-mount caused the
-  // number+title overlay to shift between menu navigations.
   const heroHeight = useStableHeroHeight();
 
   return (
@@ -25,11 +22,6 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
       className="relative w-full overflow-hidden"
       style={{ height: heroHeight }}
     >
-      {/* Static photo layer — plain div with CSS opacity transition (NO
-          framer-motion). Promoted to its own compositor layer via
-          translateZ so scrolling never repaints. Zero transforms /
-          filters / blend-modes during scroll — image renders at native
-          fixed size and is composited as a static bitmap. */}
       <div
         className="absolute inset-0"
         style={{
@@ -79,6 +71,30 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
           </motion.p>
         )}
       </div>
+
+      {/* FIX(편의성): 서브페이지 히어로가 풀스크린이라 첫 화면이 사진뿐 —
+          막다른 길처럼 보이지 않도록 스크롤 유도 화살표 추가.
+          (히어로 자체를 줄이고 싶다면 useStableHeroHeight 대신
+          height: "62svh" 를 넘기는 한 줄이면 됩니다.) */}
+      <motion.div
+        aria-hidden
+        animate={{ y: [0, 7, 0], opacity: [0.9, 0.5, 0.9] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/85"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </motion.div>
     </section>
   );
 }

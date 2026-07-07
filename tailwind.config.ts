@@ -11,19 +11,18 @@ const config: Config = {
         muted: "var(--muted)",
       },
       fontFamily: {
-        // User asked for the handwriting font to apply to EVERYTHING.
-        // Nanum 내아내의 손글씨 is now the primary across serif / sans
-        // / hand utility classes; Gowun Batang stays as a fallback for
-        // the brief window between first paint and the .ttf streaming
-        // in (next/font is set to display: swap, preload: false).
+        // FIX(타이포 위계): 손글씨 전면 사용 → 용도 분리.
+        //  - serif / sans (본문·주소·계좌번호·전화번호·캡션): Gowun Batang.
+        //    숫자와 긴 한글 정보를 정확히 읽고 옮겨 적을 수 있어야 하는 영역.
+        //  - hand (제목·이름·감성 문구): 나눔 내아내의 손글씨 유지.
+        // 기존 컴포넌트의 font-hand 사용처(히어로 타이틀, 메뉴 라벨,
+        // 이름, 섹션 제목)는 그대로 손글씨로 렌더링됨 — 코드 수정 불필요.
         serif: [
-          "var(--font-nanum-hand)",
           "var(--font-gowun-batang)",
           "Noto Serif KR",
           "serif",
         ],
         sans: [
-          "var(--font-nanum-hand)",
           "var(--font-gowun-batang)",
           "Noto Serif KR",
           "serif",

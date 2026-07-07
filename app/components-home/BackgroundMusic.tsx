@@ -8,13 +8,12 @@ export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const autoTriedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
-  // Hide the floating music button whenever the bottom page-nav scrolls
-  // into view — otherwise it sits on top of the "이전 · 다음" links.
   const [bottomNavVisible, setBottomNavVisible] = useState(false);
   const pathname = usePathname();
 
-  // First user interaction (click / touch / scroll / keydown) attempts autoplay.
-  // Tracked via ref to avoid re-renders + listener re-registration.
+  // FIX(반응성/편의성): 자동재생 트리거에서 scroll 제거.
+  // 첫 스크롤에 갑자기 음악이 나오면 놀람 — 명시적 제스처(클릭/터치/
+  // 키)에서만 시도. 7 MB 트랙은 128kbps AAC로 재인코딩 권장 (~2 MB).
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -34,29 +33,17 @@ export function BackgroundMusic() {
     const opts: AddEventListenerOptions = { once: true, passive: true };
     window.addEventListener("click", tryAutoplay, opts);
     window.addEventListener("touchstart", tryAutoplay, opts);
-    window.addEventListener("scroll", tryAutoplay, opts);
     window.addEventListener("keydown", tryAutoplay, { once: true });
 
     return () => {
       window.removeEventListener("click", tryAutoplay);
       window.removeEventListener("touchstart", tryAutoplay);
-      window.removeEventListener("scroll", tryAutoplay);
       window.removeEventListener("keydown", tryAutoplay);
     };
   }, []);
 
-  // Hide the floating music button while the user is near the bottom of
-  // the page so it never sits on top of the "이전 · 다음" links inside
-  // SubpageNav. Switched from IntersectionObserver to a plain scroll +
-  // resize listener because:
-  //   - querySelector("[data-bottom-nav]") sometimes fired before the new
-  //     route's nav was in the DOM
-  //   - IntersectionObserver's batching delayed the fade past where a
-  //     fast scroll would already have the prev link on screen
-  // Distance-to-bottom is dead simple, runs every scroll frame (passive),
-  // and never misses. 420 px of headroom is well above the tallest
-  // SubpageNav so the button is fully invisible before the prev link
-  // can enter the viewport.
+  // Hide the floating music button while near the bottom of the page
+  // (unchanged from original — see original comments).
   useEffect(() => {
     if (typeof window === "undefined") return;
     setBottomNavVisible(false);
@@ -70,7 +57,6 @@ export function BackgroundMusic() {
 
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check, { passive: true });
-    // Re-check once after layout/font/image work settles for the new route.
     const raf = requestAnimationFrame(check);
     const timer = window.setTimeout(check, 500);
 
@@ -100,10 +86,6 @@ export function BackgroundMusic() {
 
   return (
     <>
-      {/* preload="none": the 7 MB track must NOT compete with the
-          invitation's first paint. The browser only starts fetching it
-          when tryAutoplay()/toggle() calls .play() on first interaction,
-          which is exactly when it's needed. */}
       <audio ref={audioRef} loop preload="none">
         <source src="/audio/bgm.m4a" type="audio/mp4" />
       </audio>
@@ -125,7 +107,6 @@ export function BackgroundMusic() {
         aria-hidden={bottomNavVisible}
       >
         <div className="relative">
-          {/* Pulsing ring while playing */}
           <AnimatePresence>
             {playing && (
               <motion.span
@@ -172,12 +153,10 @@ export function BackgroundMusic() {
                   strokeLinejoin="round"
                   aria-hidden
                 >
-                  {/* Speaker body — filled triangle out of a slim base */}
                   <path
                     d="M11 5L6 9H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h3l5 4V5z"
                     fill="currentColor"
                   />
-                  {/* Two sound-wave arcs, animated to pulse while playing */}
                   <motion.path
                     d="M15.5 8.5a5 5 0 0 1 0 7"
                     animate={{ opacity: [0.55, 1, 0.55] }}
@@ -215,12 +194,10 @@ export function BackgroundMusic() {
                   strokeLinejoin="round"
                   aria-hidden
                 >
-                  {/* Same speaker body */}
                   <path
                     d="M11 5L6 9H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h3l5 4V5z"
                     fill="currentColor"
                   />
-                  {/* X mark to the right — unambiguous "muted" indicator */}
                   <line x1="22" y1="9" x2="16" y2="15" />
                   <line x1="16" y1="9" x2="22" y2="15" />
                 </motion.svg>

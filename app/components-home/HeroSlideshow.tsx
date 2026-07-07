@@ -12,7 +12,9 @@ interface Slide {
   render: (key: number) => ReactNode;
 }
 
-const SLIDE_MS = 3500;
+// FIX(페이싱): 3500 → 5500ms. SplitText 등장이 끝난 뒤(마지막 딜레이
+// 0.85s + stagger) 사진과 텍스트를 감상할 시간을 준 다음 전환.
+const SLIDE_MS = 5500;
 
 const SLIDES: Slide[] = [
   {
@@ -71,10 +73,6 @@ const SLIDES: Slide[] = [
     src: weddingData.slides[2].src,
     render: (key) => (
       <div className="font-hand font-medium leading-[0.95] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
-        {/* Date split into two short lines so each can run at slide 1's
-            big size. Original "2026년 08월 29일 / 토요일 낮 12:30" was
-            10 + 8 chars per line — too long to fit the unified clamp
-            without wrapping into 3-4 stacks on mobile. */}
         <SplitText
           animationKey={`d1-${key}`}
           text="8월 29일"
@@ -101,7 +99,6 @@ const SLIDES: Slide[] = [
 export function HeroSlideshow() {
   const [current, setCurrent] = useState(0);
   const pausedRef = useRef(false);
-  // Shared with SubpageHero — see useStableHeroHeight.
   const heroHeight = useStableHeroHeight();
 
   const goNext = useCallback(() => {
@@ -182,6 +179,9 @@ export function HeroSlideshow() {
         style={{ touchAction: "none" }}
       />
 
+      {/* FIX(상시 모션): 텍스트를 감싸던 무한 둥둥(y±8 + rotate±0.3°)
+          motion.div 제거. SplitText 등장 애니메이션은 그대로 유지 —
+          등장이 끝나면 텍스트가 정지해 사진에 시선이 머물도록. */}
       <AnimatePresence mode="wait">
         <motion.div
           key={`text-${current}`}
@@ -191,21 +191,14 @@ export function HeroSlideshow() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-2 text-center sm:top-[26vh] sm:px-6"
         >
-          <motion.div
-            animate={{ y: [0, -8, 0], rotate: [-0.3, 0.3, -0.3] }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            {SLIDES[current].render(current)}
-          </motion.div>
+          <div>{SLIDES[current].render(current)}</div>
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute bottom-10 left-1/2 z-20 -translate-x-1/2">
-        <div className="flex items-center gap-2.5">
+      {/* FIX(터치 타겟): 도트의 보이는 모양(3px 바)은 그대로, 버튼에
+          투명 패딩을 둘러 실제 터치 영역을 ~44px로 확보. */}
+      <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
+        <div className="flex items-center">
           {SLIDES.map((_, i) => (
             <motion.button
               key={i}
@@ -214,12 +207,16 @@ export function HeroSlideshow() {
               whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.85 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
-              className={`h-[3px] rounded-full origin-center transition-all duration-500 ${
-                i === current ? "w-10 bg-white" : "w-2 bg-white/45"
-              }`}
+              className="group px-[5px] py-5"
               aria-label={`사진 ${i + 1}로 이동`}
               aria-current={i === current ? "true" : undefined}
-            />
+            >
+              <span
+                className={`block h-[3px] rounded-full origin-center transition-all duration-500 ${
+                  i === current ? "w-10 bg-white" : "w-2 bg-white/45"
+                }`}
+              />
+            </motion.button>
           ))}
         </div>
       </div>

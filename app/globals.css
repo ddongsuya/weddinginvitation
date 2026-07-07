@@ -3,20 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #fdfcfa;
+  /* FIX: 토큰과 실제 화면 배경(html 그라데이션 시작색)을 일치시킴.
+     기존 #fdfcfa는 정의만 되고 어디에도 그려지지 않았음. */
+  --background: #f4ede4;
   /* Slightly deeper ink — readability over pure-black harshness.
      Contrast vs #f4ede4 (page bg) = ~12:1 (AAA). */
   --foreground: #25221e;
   --accent: #a67d54;
-  /* Was #6b6862 (~5.4:1, borderline AA). Now #524e48 ≈ 8.3:1 (AAA).
-     Premium invitations universally use a darker secondary tone so
-     captions/labels stay legible against off-white cards. */
   --muted: #524e48;
 }
 
 html {
   background: linear-gradient(180deg, #f4ede4 0%, #efe4d6 100%);
-  /* Lock the page: no iOS rubber-band, no pull-to-refresh, no double-tap zoom */
+  /* Lock the page: no iOS rubber-band, no pull-to-refresh */
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -29,33 +28,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
-  /* Allow vertical scroll only; disables pinch-zoom + double-tap-zoom delay */
-  touch-action: pan-y;
-  /* Korean typography baseline — these compound to "premium feel":
-     - kern + liga: shape/kerning info from the font
-     - palt: proportional kana/CJK metrics (tighter, even gaps)
-     - tracking pulled in slightly because Korean glyphs are full-width
-     - keep-all: never break Korean WORDS mid-character on wrap */
+  /* FIX(줌 정책): pan-y 단독 → pan-y pinch-zoom.
+     세로 스크롤은 그대로 두고 핀치줌(텍스트 확대)을 허용.
+     갤러리 라이트박스는 자체적으로 touch-action: none을 걸고 있어
+     사진 확대 방지는 기존대로 유지됨. */
+  touch-action: pan-y pinch-zoom;
   font-feature-settings: "kern" 1, "liga" 1, "palt" 1;
   letter-spacing: -0.012em;
   word-break: keep-all;
   line-break: strict;
   text-rendering: optimizeLegibility;
-  /* User feedback: 손글씨 폰트 stroke가 너무 가늘어 잘 안 보임.
-     Nanum 내아내의 손글씨 ttf has only weight 400 baked in, so we
-     ask the browser to synthesize a medium weight AND paint a thin
-     same-color stroke around every glyph. Combined, this thickens
-     letters by ~0.4-0.6 px without smudging the handwriting shapes. */
-  font-weight: 500;
-  -webkit-text-stroke: 0.4px currentColor;
-}
-
-/* Drop the synthetic stroke on icons/buttons whose SVGs use their own
-   stroke property — the cascading text-stroke would otherwise pile on
-   top of the intended icon line width. */
-svg,
-svg * {
-  -webkit-text-stroke: 0;
+  /* FIX(타이포 위계): 손글씨가 본문에서 빠지면서(→ Gowun Batang)
+     전역 font-weight 500 + -webkit-text-stroke 0.4px 보정 핵이
+     불필요해져 제거. 손글씨는 이제 font-hand 제목/이름 전용이라
+     큰 사이즈로만 쓰여 얇음 문제가 없음. */
 }
 
 /* Headlines breathe — moderate tracking, snug leading. */
@@ -72,15 +58,7 @@ h3 {
   letter-spacing: 0;
 }
 
-/* Use 100svh (small viewport height) where supported.
-   - vh / lvh = viewport WITHOUT browser chrome → hero overflows when
-     address bar is visible; later when address bar hides, the previously-
-     overflowed bottom reveals itself, which the user perceives as the
-     image "enlarging" during scroll.
-   - dvh = dynamic, resizes with chrome → causes the hero to literally
-     change size every scroll frame (worst case).
-   - svh = STATIC value tied to the smallest viewport (chrome visible) →
-     hero is always ≤ visible area, never overflows, never resizes. */
+/* Use 100svh (small viewport height) where supported. */
 @supports (height: 100svh) {
   .h-screen {
     height: 100svh;
@@ -106,8 +84,21 @@ h3 {
   }
 }
 
-/* Hide native cursor on hover-capable devices (custom cursor takes over).
-   Restore native cursors for elements where text/disabled feedback matters. */
+/* FIX(접근성): 모션 최소화 설정 사용자 — CSS 키프레임/트랜지션을
+   사실상 압축. (framer-motion 측은 JS 애니메이션이라 이 규칙이 안
+   닿음 — 필요하면 각 컴포넌트에서 useReducedMotion() 도입.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide native cursor on hover-capable devices (custom cursor takes over). */
 @media (hover: hover) and (pointer: fine) {
   body {
     cursor: none;
