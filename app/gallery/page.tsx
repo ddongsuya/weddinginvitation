@@ -217,21 +217,41 @@ export default function GalleryPage() {
   // photo never drifts; mouse/pen use the pointer props on the stage.
   const stageRef = useRef<HTMLDivElement | null>(null);
   const lbStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  // Set true when a swipe consumes the gesture (navigate/close), so the
+  // transparent prev/next tap-zones over the photo don't ALSO fire on the
+  // click that can follow a touch/mouse release.
+  const lbNavConsumed = useRef(false);
 
   const applyLightboxGesture = (dx: number, dy: number, dt: number) => {
     if (Math.abs(dx) > Math.abs(dy)) {
       // Horizontal → prev / next
       if (Math.abs(dx) > 60 || (Math.abs(dx) > 30 && dt < 250)) {
+        lbNavConsumed.current = true;
         if (dx < 0) goNext();
         else goPrev();
       }
     } else {
       // Vertical (either direction) → dismiss the overlay
-      if (Math.abs(dy) > 90 || (Math.abs(dy) > 45 && dt < 260)) close();
+      if (Math.abs(dy) > 90 || (Math.abs(dy) > 45 && dt < 260)) {
+        lbNavConsumed.current = true;
+        close();
+      }
     }
   };
 
+  // Tap on a photo half-overlay → prev/next, unless a swipe already
+  // consumed this gesture (then just clear the flag and ignore the click).
+  const onZoneTap = (dir: 1 | -1) => {
+    if (lbNavConsumed.current) {
+      lbNavConsumed.current = false;
+      return;
+    }
+    if (dir === 1) goNext();
+    else goPrev();
+  };
+
   const onStagePointerDown = (e: React.PointerEvent) => {
+    lbNavConsumed.current = false;
     if (e.pointerType === "touch") return; // touch goes through the locked path
     lbStart.current = { x: e.clientX, y: e.clientY, t: e.timeStamp };
   };
@@ -265,6 +285,7 @@ export default function GalleryPage() {
       st = e.timeStamp;
       axis = null;
       tracking = true;
+      lbNavConsumed.current = false;
     };
     const onMove = (e: TouchEvent) => {
       if (!tracking || e.touches.length !== 1) return;
@@ -302,6 +323,38 @@ export default function GalleryPage() {
     // goNext / goPrev / close are behaviorally stable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightboxOpen]);
+
+  // Bottom filmstrip — keep the active thumbnail centered as the photo
+  // changes. The FIRST centering after open jumps instantly (behavior
+  // "auto"): a smooth scroll dispatched at mount is ignored before the
+  // strip has laid out, so it's deferred to rAF and made instant once;
+  // subsequent photo changes glide ("smooth").
+  const stripRef = useRef<HTMLDivElement | null>(null);
+  const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const stripFirst = useRef(true);
+
+  useEffect(() => {
+    if (!lightboxOpen || active === null) {
+      stripFirst.current = true;
+      return;
+    }
+    const strip = stripRef.current;
+    const thumb = thumbRefs.current[active];
+    if (!strip || !thumb) return;
+    const behavior: ScrollBehavior = stripFirst.current ? "auto" : "smooth";
+    stripFirst.current = false;
+    const id = requestAnimationFrame(() => {
+      const left =
+        thumb.offsetLeft - strip.clientWidth / 2 + thumb.offsetWidth / 2;
+      strip.scrollTo({ left, behavior });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [active, lightboxOpen]);
+
+  const jumpTo = (i: number) => {
+    setDirection(i >= (active ?? 0) ? 1 : -1);
+    setActive(i);
+  };
 
   return (
     <main>
@@ -462,165 +515,59 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            onClick={close}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-50 flex flex-col"
+            style={{ background: "#0c0a09" }}
             role="dialog"
             aria-label="사진 크게 보기"
           >
-            {/* Counter */}
-            <motion.p
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.15 }}
-              className="absolute left-1/2 top-5 -translate-x-1/2 font-serif text-[15px] tracking-[0.25em] text-white/85 tabular-nums drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] sm:top-6 sm:text-base"
+            {/* Top bar — counter (left) + bare close X (right) */}
+            <div
+              className="flex shrink-0 items-center justify-between"
+              style={{ padding: "18px 10px 14px 24px" }}
             >
-              {active + 1} / {total}
-            </motion.p>
-
-            {/* Close — minimal X with hover ring */}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              whileHover={{ scale: 1.08, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                close();
-              }}
-              className="group absolute right-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-white/[0.06] text-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] transition-colors hover:border-white/55 hover:bg-white/15 sm:right-6 sm:top-6 sm:h-12 sm:w-12"
-              aria-label="닫기"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:h-[18px] sm:w-[18px]"
-                aria-hidden
+              <span
+                className="font-serif tabular-nums"
+                style={{
+                  fontSize: "14px",
+                  letterSpacing: "0.3em",
+                  color: "rgba(255,255,255,0.6)",
+                }}
               >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </motion.button>
-
-            {/* Prev — elegant thin chevron with soft glow ring */}
-            <motion.button
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              whileHover="hover"
-              whileTap={{ scale: 0.9 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                goPrev();
-              }}
-              className="group absolute left-2 top-1/2 z-10 grid h-14 w-14 -translate-y-1/2 place-items-center sm:left-6 sm:h-20 sm:w-20"
-              aria-label="이전 사진"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
-              {/* Soft circular tap-target — visible on hover, ambient on rest */}
-              <motion.span
-                aria-hidden
-                variants={{
-                  rest: { scale: 0.85, opacity: 0.35 },
-                  hover: { scale: 1, opacity: 1 },
-                }}
-                initial="rest"
-                animate="rest"
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.35)] group-hover:border-white/55 group-hover:bg-white/15"
-              />
-              {/* Thin chevron — drop-shadow for legibility on any photo */}
-              <motion.svg
-                variants={{
-                  rest: { x: 0 },
-                  hover: { x: -3 },
-                }}
-                initial="rest"
-                transition={{ type: "spring", stiffness: 360, damping: 22 }}
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="relative text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] sm:h-7 sm:w-7"
-                aria-hidden
+                {active + 1} / {total}
+              </span>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="닫기"
+                className="grid h-11 w-11 place-items-center"
+                style={{ WebkitTapHighlightColor: "transparent" }}
               >
-                <path d="m15 5-7 7 7 7" />
-              </motion.svg>
-            </motion.button>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.8)"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
 
-            {/* Next — mirrored design */}
-            <motion.button
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              whileHover="hover"
-              whileTap={{ scale: 0.9 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                goNext();
-              }}
-              className="group absolute right-2 top-1/2 z-10 grid h-14 w-14 -translate-y-1/2 place-items-center sm:right-6 sm:h-20 sm:w-20"
-              aria-label="다음 사진"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
-              <motion.span
-                aria-hidden
-                variants={{
-                  rest: { scale: 0.85, opacity: 0.35 },
-                  hover: { scale: 1, opacity: 1 },
-                }}
-                initial="rest"
-                animate="rest"
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.35)] group-hover:border-white/55 group-hover:bg-white/15"
-              />
-              <motion.svg
-                variants={{
-                  rest: { x: 0 },
-                  hover: { x: 3 },
-                }}
-                initial="rest"
-                transition={{ type: "spring", stiffness: 360, damping: 22 }}
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="relative text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] sm:h-7 sm:w-7"
-                aria-hidden
-              >
-                <path d="m9 5 7 7-7 7" />
-              </motion.svg>
-            </motion.button>
-
-            {/* Photo (swipe + slide on prev/next) — full viewport.
-                Touch swipes run through the direction-locked native
-                listeners on this stage (touch-action: none so the browser
-                never scrolls/zooms mid-gesture); mouse/pen use the pointer
-                props. The inner motion.div only does the slide animation. */}
+            {/* Photo area — flex:1. Swipe runs through the direction-locked
+                native listeners on this stage; touch-action:none keeps
+                pinch-zoom off (사진 확대 방지) and lets the swipe
+                preventDefault take. Prev/next are transparent tap-halves
+                layered over the photo (no visible buttons on the image). */}
             <div
               ref={stageRef}
-              className="absolute inset-0 overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
+              className="relative min-h-0 flex-1 overflow-hidden"
               onPointerDown={onStagePointerDown}
               onPointerUp={onStagePointerUp}
               onPointerCancel={() => {
@@ -662,6 +609,73 @@ export default function GalleryPage() {
                   />
                 </motion.div>
               </AnimatePresence>
+
+              {/* Transparent nav tap-zones — left half = prev, right half =
+                  next. Layered over the photo; touch-action:none so the
+                  stage's swipe listeners still fire and pinch-zoom stays off.
+                  A swipe sets lbNavConsumed so the trailing click is ignored. */}
+              <button
+                type="button"
+                onClick={() => onZoneTap(-1)}
+                aria-label="이전 사진"
+                className="absolute inset-y-0 left-0 w-1/2"
+                style={{
+                  touchAction: "none",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => onZoneTap(1)}
+                aria-label="다음 사진"
+                className="absolute inset-y-0 right-0 w-1/2"
+                style={{
+                  touchAction: "none",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              />
+            </div>
+
+            {/* Bottom filmstrip — horizontal scroll, active thumbnail kept
+                centered (see effect above). Scrollbar hidden. */}
+            <div
+              ref={stripRef}
+              className="relative flex shrink-0 items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ gap: "6px", padding: "16px 24px 22px" }}
+            >
+              {weddingData.gallery.map((photo, i) => {
+                const activeThumb = i === active;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    ref={(el) => {
+                      thumbRefs.current[i] = el;
+                    }}
+                    onClick={() => jumpTo(i)}
+                    aria-label={`${i + 1}번째 사진`}
+                    aria-current={activeThumb ? "true" : undefined}
+                    className="relative shrink-0 overflow-hidden"
+                    style={{
+                      height: "56px",
+                      width: activeThumb ? "42px" : "34px",
+                      opacity: activeThumb ? 1 : 0.35,
+                      borderRadius: "6px",
+                      transition: "width 0.3s ease, opacity 0.3s ease",
+                      WebkitTapHighlightColor: "transparent",
+                    }}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      fill
+                      sizes="48px"
+                      className="object-cover"
+                      draggable={false}
+                    />
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
         )}

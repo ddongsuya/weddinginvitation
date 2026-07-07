@@ -80,15 +80,15 @@ export function SubpageHero({ num, label, photo, subtitle }: SubpageHeroProps) {
         aria-hidden
         animate={{ y: [0, 7, 0], opacity: [0.9, 0.5, 0.9] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/85"
+        className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
       >
         <svg
-          width="18"
-          height="18"
+          width="32"
+          height="32"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.6"
+          strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
         >

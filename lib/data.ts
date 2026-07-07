@@ -62,7 +62,7 @@ export const weddingData = {
   accounts: {
     groom: [
       { holder: "임정모", bank: "국민은행", number: "221702-04-112063" },
-      { holder: "임광현", bank: "신한은행", number: "559901-04-338848" },
+      { holder: "임광현", bank: "국민은행", number: "559901-04-338848" },
       { holder: "이향숙", bank: "농협은행", number: "613083-51-146664" },
     ],
     bride: [
