@@ -1,32 +1,33 @@
 // scripts/build-og-thumbnail.mjs
 //
 // KakaoTalk's chat preview slot is a fixed 1.91:1 landscape and crops
-// any image that doesn't match. We generate the share card at exactly
-// that ratio (1200×630) so Kakao renders it edge-to-edge with no crop
-// of its own.
+// any image that doesn't match. The share card is therefore an image
+// sized to EXACTLY 1200×630 (that ratio), so Kakao renders it
+// edge-to-edge with no crop of its own.
 //
-// STRATEGY — full-bleed (per user choice): the master 1:1 photo is
-// scaled to COVER the whole 1200×630 canvas and center-cropped. The
-// couple fills the card edge-to-edge, sharp, with no blurred side bars.
-// Center gravity keeps both faces well inside the frame with headroom;
-// the only thing lost is the lower legs / dress hem and some grass at
-// the very bottom (a deliberate, accepted trade — a landscape slot
-// physically cannot show a full-body 1:1 without either cropping or
-// padding).
+// STRATEGY — user-provided landscape photo, used AS-IS. Per the user,
+// the card must be this exact photo with no adjustment: no crop, no
+// re-frame, no blur bars, no re-encode. The master below is already a
+// finished 1200×630 landscape file, so this script only VERIFIES the
+// dimensions and copies the bytes verbatim to the public asset. (If
+// you ever swap the master, it must already be exactly 1200×630 — this
+// script intentionally refuses to resize/crop, to keep "no adjustment"
+// guaranteed.)
 //
-// (A previous version padded the sides with a blurred copy so nothing
-// was cropped; superseded by this full-bleed look.)
+// (Earlier versions generated the card from a 1:1 master via sharp —
+// first a centered design with blurred side bars, then a full-bleed
+// center-crop. Both superseded by this drop-in landscape photo.)
 //
-// Input:  kkk/.../썸네일_1080x1080.jpg  (1080×1080, the master 1:1)
-// Output: public/photos/share-card-v3.jpg (1200×630 landscape)
-//         NOTE: filename is bumped v2 → v3 so KakaoTalk/OG scrapers,
-//         which cache preview images per-URL, fetch the new image
+// Input:  kkk/.../썸네일_가로_1200x630.jpg  (1200×630 landscape master)
+// Output: public/photos/share-card-v4.jpg   (byte-identical copy)
+//         NOTE: filename is bumped v3 → v4 so KakaoTalk/OG scrapers,
+//         which cache preview images per-URL, fetch the new photo
 //         instead of serving the stale cached one.
 //
 // Run with: node scripts/build-og-thumbnail.mjs
 
 import sharp from "sharp";
-import { existsSync } from "node:fs";
+import { existsSync, copyFileSync } from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
@@ -35,12 +36,11 @@ const SRC_MASTER = path.join(
   "kkk",
   "모바일 청첩장_1080x1920",
   "0 썸네일 1대1",
-  "썸네일_1080x1080.jpg"
+  "썸네일_가로_1200x630.jpg"
 );
-const OUT = path.join(ROOT, "public", "photos", "share-card-v3.jpg");
+const OUT = path.join(ROOT, "public", "photos", "share-card-v4.jpg");
 
-// 1.91:1 Facebook/Kakao OG standard. Kakao's preview slot is the
-// same aspect, so it renders edge-to-edge with no center-crop.
+// Kakao's preview slot. The master must already match this exactly.
 const CANVAS_W = 1200;
 const CANVAS_H = 630;
 
@@ -49,16 +49,21 @@ async function main() {
     throw new Error(`Master thumbnail not found at ${SRC_MASTER}`);
   }
 
-  // Cover the full 1200×630 with the master and center-crop. `center`
-  // gravity keeps both subjects framed with headroom; only the lower
-  // portion (legs / grass) falls outside the slot.
-  await sharp(SRC_MASTER)
-    .resize(CANVAS_W, CANVAS_H, { fit: "cover", position: "center" })
-    .jpeg({ quality: 92, mozjpeg: true })
-    .toFile(OUT);
+  // Guard: the master must already be exactly 1200×630. We do NOT
+  // resize/crop here — "no adjustment" is the whole point.
+  const { width, height } = await sharp(SRC_MASTER).metadata();
+  if (width !== CANVAS_W || height !== CANVAS_H) {
+    throw new Error(
+      `Master must be exactly ${CANVAS_W}×${CANVAS_H} (got ${width}×${height}). ` +
+        `Re-crop the source to Kakao's 1.91:1 slot before running.`
+    );
+  }
+
+  // Byte-for-byte copy — no re-encode, so the photo is untouched.
+  copyFileSync(SRC_MASTER, OUT);
 
   console.log(
-    `✓ Wrote ${OUT}\n  ${CANVAS_W}×${CANVAS_H} landscape, full-bleed center-crop of the master (no blur bars).`
+    `✓ Wrote ${OUT}\n  ${CANVAS_W}×${CANVAS_H} landscape, copied verbatim from the master (no crop, no re-encode).`
   );
 }
 

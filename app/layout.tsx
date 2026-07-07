@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/photos/share-card-v3.jpg",
+        url: "/photos/share-card-v4.jpg",
         width: 1200,
         height: 630,
         alt: "임정모 ♥ 최화형 결혼식 청첩장",
