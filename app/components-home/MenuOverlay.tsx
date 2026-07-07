@@ -76,22 +76,23 @@ export function MenuOverlay({
                 "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
             }}
           >
+            {/* REDESIGN(3a): 오버레이 헤더도 유리 필로 통일 */}
             <button
               type="button"
               onClick={goHome}
-              className="rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg tracking-wide text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 active:bg-white/25 sm:px-6 sm:py-3.5 sm:text-xl"
+              className="rounded-full border border-white/25 bg-white/10 px-5 py-[11px] font-serif text-base tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/20 active:bg-white/25 sm:px-6 sm:py-3 sm:text-lg"
             >
               처음으로
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex items-center gap-3 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-serif text-lg text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-white/20 active:bg-white/25 sm:gap-3.5 sm:px-6 sm:py-3.5 sm:text-xl"
+              className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-[11px] font-serif text-base tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/20 active:bg-white/25 sm:px-6 sm:py-3 sm:text-lg"
               aria-label="메뉴 닫기"
             >
-              <span className="relative h-5 w-5 sm:h-6 sm:w-6">
-                <span className="absolute left-0 top-1/2 h-[2px] w-5 -translate-y-1/2 rotate-45 bg-white sm:w-6" />
-                <span className="absolute left-0 top-1/2 h-[2px] w-5 -translate-y-1/2 -rotate-45 bg-white sm:w-6" />
+              <span className="relative h-[15px] w-[15px]">
+                <span className="absolute left-0 top-1/2 h-[1.5px] w-[15px] -translate-y-1/2 rotate-45 bg-current" />
+                <span className="absolute left-0 top-1/2 h-[1.5px] w-[15px] -translate-y-1/2 -rotate-45 bg-current" />
               </span>
               닫기
             </button>

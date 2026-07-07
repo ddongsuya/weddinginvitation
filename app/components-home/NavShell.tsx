@@ -13,11 +13,20 @@ const GUIDE_KEY = "menu-guide-seen";
 
 export function NavShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  // FIX(메뉴 가이드): 첫 방문 1회, 홈에서만 "안내" 버튼 아래에
-  // 화살표 + 말풍선을 띄워 유일한 정보 진입 경로를 알려줌.
-  // 메뉴를 한 번 열면 localStorage에 기록되어 다시 나오지 않음.
+  // FIX(가독성): 3b 텍스트 내비는 밝은 본문 위에서 안 보임 —
+  // 히어로(≈100svh)를 지나면 잉크색으로 전환.
+  const [pastHero, setPastHero] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => {
+      setPastHero(window.scrollY > window.innerHeight * 0.85);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") {
@@ -66,14 +75,20 @@ export function NavShell({ children }: { children: React.ReactNode }) {
                 "max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem))",
             }}
           >
-            {/* FIX(편의성): 이미 홈이면 "처음으로"는 무의미 — 숨김.
-                자리는 유지해 "안내"의 위치가 페이지 간에 흔들리지 않게. */}
+            {/* REDESIGN(3a 채택): 프로스트 글라스 필.
+                사진 위 = 흰 유리(white/16 + blur) + 흰 텍스트,
+                밝은 본문 위(pastHero) = 밝은 유리(white/50) + 잉크 텍스트.
+                이미 홈이면 "처음으로"는 숨김(자리 유지). */}
             {pathname === "/" ? (
               <div aria-hidden />
             ) : (
               <Link
                 href="/"
-                className="pointer-events-auto rounded-full border border-white/25 bg-stone-900/85 px-5 py-3 font-serif text-lg tracking-wide text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-stone-900 sm:px-6 sm:py-3.5 sm:text-xl"
+                className={`pointer-events-auto rounded-full border px-5 py-[11px] font-serif text-base tracking-[0.04em] backdrop-blur-md transition-all duration-300 sm:px-6 sm:py-3 sm:text-lg ${
+                  pastHero
+                    ? "border-stone-400/30 bg-white/50 text-foreground [text-shadow:none] hover:bg-white/70"
+                    : "border-white/40 bg-white/15 text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.3)] hover:bg-white/25"
+                }`}
               >
                 처음으로
               </Link>
@@ -83,15 +98,19 @@ export function NavShell({ children }: { children: React.ReactNode }) {
               <motion.button
                 type="button"
                 onClick={openMenu}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.94 }}
+                whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                className="pointer-events-auto group flex items-center gap-3 rounded-full border border-white/25 bg-stone-900/85 px-5 py-3 font-serif text-lg text-white shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-colors hover:bg-stone-900 sm:gap-3.5 sm:px-6 sm:py-3.5 sm:text-xl"
+                className={`pointer-events-auto group flex items-center gap-2 rounded-full border px-5 py-[11px] font-serif text-base tracking-[0.04em] backdrop-blur-md transition-all duration-300 sm:px-6 sm:py-3 sm:text-lg ${
+                  pastHero
+                    ? "border-stone-400/30 bg-white/50 text-foreground [text-shadow:none] hover:bg-white/70"
+                    : "border-white/40 bg-white/15 text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.3)] hover:bg-white/25"
+                }`}
                 aria-label="메뉴 열기"
               >
-                <span className="flex flex-col gap-[5px]">
-                  <span className="block h-[2px] w-5 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 sm:w-6" />
-                  <span className="block h-[2px] w-5 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-x-1 sm:w-6" />
+                {/* 리뉴얼 아이콘: 비대칭 2선 (16px/10px 우측 정렬), currentColor */}
+                <span className="flex flex-col items-end gap-1">
+                  <span className="block h-[1.5px] w-4 bg-current transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5" />
+                  <span className="block h-[1.5px] w-2.5 bg-current transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-4" />
                 </span>
                 안내
               </motion.button>
