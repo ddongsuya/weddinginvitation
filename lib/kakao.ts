@@ -76,9 +76,12 @@ export async function shareInvitation(): Promise<void> {
     // that doesn't match (including portrait — verified via Kakao's
     // own debugger). Sending a landscape file at the matching ratio
     // means KakaoTalk renders the image edge-to-edge with no crop.
-    // The user's 1:1 design sits 630×630 in the middle, cream
-    // 285px-wide bars on either side blending into the page palette.
-    const imageUrl = `${siteUrl}/photos/share-card-v2.jpg`;
+    // The master 1:1 couple photo is scaled to COVER the whole card
+    // and center-cropped (full-bleed) — both faces stay framed with
+    // headroom; only the lower legs / grass fall outside the slot.
+    // Filename is v3 (was v2) so Kakao's per-URL preview cache fetches
+    // the new full-bleed image instead of the old centered one.
+    const imageUrl = `${siteUrl}/photos/share-card-v3.jpg`;
     // Same-domain endpoint that returns an .ics file. Kakao's button
     // link allowlist blocks external domains (google.com etc.), and
     // .ics is what triggers the OS-native "Add to Calendar" prompt —
