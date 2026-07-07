@@ -9,8 +9,6 @@ import { ScrollProgress } from "./ScrollProgress";
 import { CustomCursor } from "./CustomCursor";
 import { BackgroundMusic } from "./BackgroundMusic";
 
-const GUIDE_KEY = "menu-guide-seen";
-
 export function NavShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   // FIX(가독성): 3b 텍스트 내비는 밝은 본문 위에서 안 보임 —
@@ -28,26 +26,14 @@ export function NavShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
 
+  // 매 방문 표시: 홈에 들어올 때마다 가이드를 다시 노출한다. (예전엔
+  // localStorage["menu-guide-seen"]로 첫 방문 1회만 띄우고 영구히 숨겼음.)
+  // 메뉴를 열면 그 방문 동안은 숨기지만, 홈에 재진입/새로고침하면 다시 나온다.
   useEffect(() => {
-    if (pathname !== "/") {
-      setShowGuide(false);
-      return;
-    }
-    try {
-      if (!localStorage.getItem(GUIDE_KEY)) setShowGuide(true);
-    } catch {
-      /* storage unavailable — skip the guide */
-    }
+    setShowGuide(pathname === "/");
   }, [pathname]);
 
-  const dismissGuide = () => {
-    setShowGuide(false);
-    try {
-      localStorage.setItem(GUIDE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-  };
+  const dismissGuide = () => setShowGuide(false);
 
   const openMenu = () => {
     dismissGuide();
