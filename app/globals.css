@@ -38,10 +38,21 @@ body {
   word-break: keep-all;
   line-break: strict;
   text-rendering: optimizeLegibility;
-  /* FIX(타이포 위계): 손글씨가 본문에서 빠지면서(→ Gowun Batang)
-     전역 font-weight 500 + -webkit-text-stroke 0.4px 보정 핵이
-     불필요해져 제거. 손글씨는 이제 font-hand 제목/이름 전용이라
-     큰 사이즈로만 쓰여 얇음 문제가 없음. */
+  /* User feedback: 손글씨 폰트 stroke가 너무 가늘어 잘 안 보임.
+     Nanum 내아내의 손글씨 ttf has only weight 400 baked in, so we
+     ask the browser to synthesize a medium weight AND paint a thin
+     same-color stroke around every glyph. Combined, this thickens
+     letters by ~0.4-0.6 px without smudging the handwriting shapes. */
+  font-weight: 500;
+  -webkit-text-stroke: 0.4px currentColor;
+}
+
+/* Drop the synthetic stroke on icons/buttons whose SVGs use their own
+   stroke property — the cascading text-stroke would otherwise pile on
+   top of the intended icon line width. */
+svg,
+svg * {
+  -webkit-text-stroke: 0;
 }
 
 /* Headlines breathe — moderate tracking, snug leading. */
