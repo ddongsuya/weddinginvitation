@@ -66,9 +66,9 @@ export const weddingData = {
       { holder: "이향숙", bank: "농협은행", number: "613083-51-146664" },
     ],
     bride: [
-      { holder: "최화형", bank: "카카오뱅크", number: "3333-01-2345678" },
-      { holder: "최승현", bank: "농협은행", number: "302-1234-5678-90" },
-      { holder: "기길란", bank: "하나은행", number: "123-456789-01234" },
+      { holder: "최화형", bank: "농협은행", number: "351-0847-4715-83" },
+      { holder: "최승현", bank: "우체국", number: "503433-02-110020" },
+      { holder: "기길란", bank: "농협은행", number: "629-12-586465" },
     ],
   },
   invitation: {
