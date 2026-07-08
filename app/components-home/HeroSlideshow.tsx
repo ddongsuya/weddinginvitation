@@ -27,14 +27,14 @@ const SLIDES: Slide[] = [
         variant="rise"
         staggerChildren={0.12}
         delay={0.15}
-        className="font-hand text-[clamp(7rem,32vw,24rem)] font-medium leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+        className="font-hand text-[clamp(7.5rem,37vw,27rem)] font-medium leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
       />
     ),
   },
   {
     src: weddingData.slides[1].src,
     render: (key) => (
-      <div className="flex items-baseline justify-center gap-2 font-hand font-medium leading-[1] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:gap-4">
+      <div className="flex items-baseline justify-center gap-1 font-hand font-medium leading-[1] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:gap-3">
         <SplitText
           animationKey={`g-${key}`}
           text={weddingData.groom.name}
@@ -42,7 +42,7 @@ const SLIDES: Slide[] = [
           variant="blur"
           staggerChildren={0.07}
           delay={0.1}
-          className="text-[clamp(3.5rem,14vw,11rem)]"
+          className="text-[clamp(3.5rem,15vw,12rem)]"
         />
         <motion.span
           key={`amp-${key}`}
@@ -53,7 +53,7 @@ const SLIDES: Slide[] = [
             delay: 0.55,
             ease: [0.34, 1.56, 0.64, 1],
           }}
-          className="inline-block text-[clamp(2rem,8vw,6rem)] text-white/85"
+          className="inline-block text-[clamp(2rem,8.5vw,6.5rem)] text-white/85"
         >
           &amp;
         </motion.span>
@@ -64,7 +64,7 @@ const SLIDES: Slide[] = [
           variant="blur"
           staggerChildren={0.07}
           delay={0.85}
-          className="text-[clamp(3.5rem,14vw,11rem)]"
+          className="text-[clamp(3.5rem,15vw,12rem)]"
         />
       </div>
     ),
@@ -80,7 +80,7 @@ const SLIDES: Slide[] = [
           variant="wave"
           staggerChildren={0.06}
           delay={0.1}
-          className="text-[clamp(6rem,26vw,19rem)]"
+          className="text-[clamp(4rem,18vw,13rem)]"
         />
         <SplitText
           animationKey={`d2-${key}`}
@@ -89,7 +89,7 @@ const SLIDES: Slide[] = [
           variant="wave"
           staggerChildren={0.06}
           delay={0.55}
-          className="mt-3 text-[clamp(6rem,26vw,19rem)] text-white/95 sm:mt-5"
+          className="mt-3 text-[clamp(4rem,18vw,13rem)] text-white/95 sm:mt-5"
         />
       </div>
     ),
@@ -189,7 +189,7 @@ export function HeroSlideshow() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-2 text-center sm:top-[26vh] sm:px-6"
+          className="pointer-events-none absolute inset-x-0 top-[24vh] z-20 flex justify-center px-1 text-center sm:top-[26vh] sm:px-6"
         >
           <div>{SLIDES[current].render(current)}</div>
         </motion.div>

@@ -126,8 +126,8 @@ export function NavShell({ children }: { children: React.ReactNode }) {
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      width="16"
-                      height="16"
+                      width="19"
+                      height="19"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="rgba(255,255,255,0.9)"
@@ -139,7 +139,7 @@ export function NavShell({ children }: { children: React.ReactNode }) {
                       <path d="M12 19V5" />
                       <path d="m5 12 7-7 7 7" />
                     </motion.svg>
-                    <span className="mr-1 mt-2 block text-right font-serif text-sm leading-[1.75] tracking-[0.04em] text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.6),0_0_2px_rgba(0,0,0,0.4)]">
+                    <span className="mr-1 mt-2 block text-right font-serif text-lg leading-[1.7] tracking-[0.04em] text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.6),0_0_2px_rgba(0,0,0,0.4)] sm:text-xl">
                       결혼식 안내는
                       <br />
                       여기에서 보실 수 있어요
