@@ -43,9 +43,9 @@ export default function WishesPage() {
             transition={{ duration: 0.8, delay: 0.25 }}
             className="mx-auto mt-10 max-w-xl text-[clamp(1.5rem,5.5vw,1.8rem)] leading-[1.9] tracking-[-0.01em] text-foreground/85"
           >
-            참석이 어려우신 분들을 위해
+            축복하는 마음이 머무는 자리
             <br />
-            계좌번호를 안내드립니다.
+            마음 전해 주셔서 감사합니다
           </motion.p>
         </div>
       </section>
