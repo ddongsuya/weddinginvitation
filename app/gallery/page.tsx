@@ -360,7 +360,7 @@ export default function GalleryPage() {
     <main>
       <SubpageHero
         num="04"
-        label="갤러리"
+        label="사진첩"
         photo={weddingData.menuHeroes.gallery}
       />
 

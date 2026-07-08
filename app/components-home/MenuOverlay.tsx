@@ -9,7 +9,7 @@ export const MENU_ITEMS = [
   { num: "01", label: "초대의 글", labelEn: "Invitation", href: "/invitation" },
   { num: "02", label: "결혼식 안내", labelEn: "The Day", href: "/wedding-day" },
   { num: "03", label: "오시는 길", labelEn: "Location", href: "/location" },
-  { num: "04", label: "갤러리", labelEn: "Gallery", href: "/gallery" },
+  { num: "04", label: "사진첩", labelEn: "Gallery", href: "/gallery" },
   { num: "05", label: "마음 전하실 곳", labelEn: "Wishes", href: "/wishes" },
 ] as const;
 

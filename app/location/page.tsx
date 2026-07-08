@@ -149,16 +149,48 @@ export default function LocationPage() {
             href={`https://map.naver.com/v5/search/${query}`}
             label="네이버지도로 길찾기"
             kind="external"
+            badge={
+              <Badge bg="#03c75a">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" aria-hidden>
+                  <path d="M15.5 4H20v16h-4.7l-6.8-9.7V20H4V4h4.7l6.8 9.7V4z" />
+                </svg>
+              </Badge>
+            }
           />
           <WayRow
             href={`https://map.kakao.com/?q=${query}`}
             label="카카오맵으로 길찾기"
             kind="external"
+            badge={
+              <Badge bg="#fae100">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#371d1e" aria-hidden>
+                  <path d="M12 3C6.9 3 2.8 6.3 2.8 10.4c0 2.6 1.7 4.9 4.3 6.2l-1 3.9c-.1.3.3.6.6.4l4.5-3c.3 0 .6.1.9.1 5.1 0 9.2-3.3 9.2-7.4S17.1 3 12 3z" />
+                </svg>
+              </Badge>
+            }
           />
           <WayRow
             onClick={copyAddress}
             kind="copy"
             last
+            badge={
+              <Badge bg="rgba(166,125,84,0.14)">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#a67d54"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              </Badge>
+            }
             label={
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -182,21 +214,45 @@ export default function LocationPage() {
   );
 }
 
-// 2b 스타일 공용 행 — 텍스트 + 헤어라인 + 우측 작은 아이콘.
+// 30×30 브랜드/기능 배지 (행 좌측).
+function Badge({ bg, children }: { bg: string; children: React.ReactNode }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        width: 30,
+        height: 30,
+        borderRadius: 8,
+        background: bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// 2b 스타일 공용 행 — 좌측 배지 + 라벨 + 우측 작은 아이콘.
 function WayRow({
   href,
   onClick,
   label,
   kind,
   last,
+  badge,
 }: {
   href?: string;
   onClick?: () => void | Promise<void>;
   label: React.ReactNode;
   kind: "external" | "copy";
   last?: boolean;
+  badge?: React.ReactNode;
 }) {
-  const cls = `group flex w-full items-center justify-between gap-4 py-5 text-left transition-colors active:bg-stone-100/60 ${
+  const cls = `group flex w-full items-center gap-[14px] py-[17px] text-left transition-colors active:bg-stone-100/60 ${
     last ? "" : "border-b border-stone-300/50"
   }`;
   const icon =
@@ -235,7 +291,8 @@ function WayRow({
     );
   const inner = (
     <>
-      <span className="text-[clamp(1.25rem,5vw,1.5rem)] text-foreground">
+      {badge}
+      <span className="flex-1 text-[clamp(1.25rem,5vw,1.5rem)] text-foreground">
         {label}
       </span>
       {icon}
