@@ -93,6 +93,7 @@ export default function WeddingDayPage() {
   const cdSectionRef = useRef<HTMLElement>(null);
 
   const [rolled, setRolled] = useState(false);
+  const [calRevealed, setCalRevealed] = useState(false);
   const [cdRolled, setCdRolled] = useState(false);
   // Deterministic initial value (→ diff 0) so the statically-prerendered
   // HTML and the first client render match; the real clock kicks in on mount.
@@ -101,8 +102,10 @@ export default function WeddingDayPage() {
   const [reduce, setReduce] = useState(false);
 
   const rolledRef = useRef(false);
+  const calRevealedRef = useRef(false);
   const cdRolledRef = useRef(false);
   const lockUntil = useRef(0);
+  const calLockUntil = useRef(0);
   const metrics = useRef({ introTop: 0, stage: 1, track: 1 });
 
   // Respect reduced-motion.
@@ -118,9 +121,12 @@ export default function WeddingDayPage() {
   useEffect(() => {
     if (!reduce) return;
     rolledRef.current = true;
+    calRevealedRef.current = true;
     cdRolledRef.current = true;
     lockUntil.current = 0;
+    calLockUntil.current = 0;
     setRolled(true);
+    setCalRevealed(true);
     setCdRolled(true);
   }, [reduce]);
 
@@ -180,7 +186,7 @@ export default function WeddingDayPage() {
     // Trigger + lock run synchronously on EVERY scroll event (never dropped),
     // so the clamp can't be skipped by rAF coalescing.
     const onScroll = () => {
-      const { introTop, stage } = metrics.current;
+      const { introTop, stage, track } = metrics.current;
       const y = window.scrollY;
 
       if (!rolledRef.current && y > introTop - stage * 0.5) {
@@ -192,6 +198,22 @@ export default function WeddingDayPage() {
       // back up (y < introTop) is always allowed.
       if (lockUntil.current && Date.now() < lockUntil.current && y > introTop) {
         window.scrollTo(0, introTop);
+      }
+      // Calendar reveal + 2nd down-lock: once the crossfade is essentially
+      // complete (p > 0.92), pop the 29 / heart / caption + bounce and hold
+      // ~2.8s at the track end (up always allowed).
+      const calEnd = introTop + track;
+      if (!calRevealedRef.current && y > introTop + track * 0.92) {
+        calRevealedRef.current = true;
+        setCalRevealed(true);
+        if (!reduce) calLockUntil.current = Date.now() + 2800;
+      }
+      if (
+        calLockUntil.current &&
+        Date.now() < calLockUntil.current &&
+        y > calEnd
+      ) {
+        window.scrollTo(0, calEnd);
       }
       if (
         !cdRolledRef.current &&
@@ -365,6 +387,10 @@ export default function WeddingDayPage() {
                             fontSize: 20,
                             boxShadow: "0 5px 18px rgba(166,125,84,0.5)",
                             fontVariantNumeric: "tabular-nums",
+                            transform: `scale(${calRevealed ? 1 : 0})`,
+                            transition: noAnim
+                              ? "none"
+                              : "transform 0.65s cubic-bezier(0.34,1.56,0.64,1) 0.25s",
                           }}
                         >
                           {c.label}
@@ -375,10 +401,16 @@ export default function WeddingDayPage() {
                             position: "absolute",
                             bottom: -17,
                             left: "50%",
-                            transform: "translateX(-50%)",
+                            transform: `translateX(-50%) scale(${
+                              calRevealed ? 1 : 0
+                            })`,
                             fontSize: 13,
                             lineHeight: 1,
                             color: "#a67d54",
+                            opacity: calRevealed ? 1 : 0,
+                            transition: noAnim
+                              ? "none"
+                              : "opacity 0.4s ease 0.95s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.95s",
                           }}
                         >
                           ♥
@@ -406,9 +438,26 @@ export default function WeddingDayPage() {
                   fontWeight: 500,
                   fontSize: 28,
                   letterSpacing: "0.06em",
+                  opacity: calRevealed ? 1 : 0,
+                  transform: calRevealed ? "translateY(0)" : "translateY(10px)",
+                  transition: noAnim
+                    ? "none"
+                    : "opacity 0.6s ease 1.3s, transform 0.6s cubic-bezier(0.22,1,0.36,1) 1.3s",
                 }}
               >
-                토요일 낮 12시 30분
+                토요일 낮{" "}
+                <span
+                  style={{
+                    display: "inline-block",
+                    color: "#8a6140",
+                    animation:
+                      calRevealed && !reduce
+                        ? "bounceTime 1s cubic-bezier(0.34,1.56,0.64,1) 1.7s both"
+                        : "none",
+                  }}
+                >
+                  12시 30분
+                </span>
               </p>
             </div>
           </div>
@@ -497,7 +546,16 @@ export default function WeddingDayPage() {
       <section
         ref={cdSectionRef}
         className="border-t border-stone-200/70"
-        style={{ marginTop: 40, padding: "80px 20px 96px", textAlign: "center" }}
+        style={{
+          marginTop: 40,
+          padding: "80px 20px 96px",
+          textAlign: "center",
+          opacity: cdRolled ? 1 : 0,
+          transform: cdRolled ? "translateY(0)" : "translateY(28px)",
+          transition: noAnim
+            ? "none"
+            : "opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1)",
+        }}
       >
         <p
           className="font-hand"
@@ -510,7 +568,7 @@ export default function WeddingDayPage() {
           }}
         >
           {weddingData.groom.name}{" "}
-          <span style={{ color: "#a67d54", fontSize: 28, verticalAlign: "middle" }}>
+          <span style={{ color: "#8a6140", fontSize: 28, verticalAlign: "middle" }}>
             ♥
           </span>{" "}
           {weddingData.bride.name}
@@ -522,7 +580,7 @@ export default function WeddingDayPage() {
             fontWeight: 500,
             fontSize: 30,
             letterSpacing: "0.15em",
-            color: "#a67d54",
+            color: "#8a6140",
           }}
         >
           결혼식까지
@@ -540,7 +598,7 @@ export default function WeddingDayPage() {
           <SlotRoll cols={cdCols} cell={108} font={96} minW={62} label={`${days}일`} />
           <span
             className="font-hand"
-            style={{ fontWeight: 500, fontSize: 44, color: "#a67d54" }}
+            style={{ fontWeight: 500, fontSize: 44, color: "#8a6140" }}
           >
             일
           </span>

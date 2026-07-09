@@ -109,6 +109,31 @@ h3 {
   }
 }
 
+/* wedding-day 달력 등장 시퀀스 — "12시 30분" 바운스 */
+@keyframes bounceTime {
+  0% {
+    transform: translateY(0);
+  }
+  22% {
+    transform: translateY(-16px);
+  }
+  44% {
+    transform: translateY(0);
+  }
+  62% {
+    transform: translateY(-8px);
+  }
+  78% {
+    transform: translateY(0);
+  }
+  90% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* Hide native cursor on hover-capable devices (custom cursor takes over). */
 @media (hover: hover) and (pointer: fine) {
   body {
