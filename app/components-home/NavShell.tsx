@@ -40,8 +40,9 @@ export function NavShell({ children }: { children: React.ReactNode }) {
     setMenuOpen(true);
   };
 
-  // /calendar is an interstitial — render bare (see original comment).
-  if (pathname === "/calendar") {
+  // /calendar is an interstitial and /onepage is the standalone
+  // single-scroll invitation — both render bare (no top-nav / menu chrome).
+  if (pathname === "/calendar" || pathname === "/onepage") {
     return <>{children}</>;
   }
 
