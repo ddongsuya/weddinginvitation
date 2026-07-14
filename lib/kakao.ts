@@ -65,11 +65,15 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
   });
 }
 
-export async function shareInvitation(): Promise<void> {
+// `path` is the invitation view to open when the card is tapped — "/" for
+// the multi-page invite (default), "/onepage" for the single-scroll one.
+// The card image is passed to Kakao directly, so the thumbnail shows
+// regardless of any per-URL OG-scrape cache.
+export async function shareInvitation(path: string = "/"): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
     const siteUrl = resolveSiteUrl();
-    const targetUrl = `${siteUrl}/`;
+    const targetUrl = `${siteUrl}${path}`;
     // The share image is a 1200×630 landscape file — KakaoTalk's chat
     // preview slot is locked to a 1.91:1 landscape aspect ratio and
     // crops any image that doesn't match (including portrait — verified
