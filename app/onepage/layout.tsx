@@ -6,9 +6,10 @@ import type { Metadata } from "next";
 // particular — treat the one-page link as self-canonical and attach the
 // thumbnail to THIS url instead of bouncing to the multi-page root.
 export const metadata: Metadata = {
+  title: "임정모♥최화형 ver.2",
   alternates: { canonical: "/onepage" },
   openGraph: {
-    title: "임정모♥최화형",
+    title: "임정모♥최화형 ver.2",
     description: "2026.08.29 (토) 12:30 여수히든베이호텔",
     type: "website",
     url: "/onepage",

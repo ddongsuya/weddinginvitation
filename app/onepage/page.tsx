@@ -629,7 +629,7 @@ export default function OnePage() {
           <div className="mt-9 flex flex-col gap-3">
             <button
               type="button"
-              onClick={() => void shareInvitation("/onepage")}
+              onClick={() => void shareInvitation("/onepage", " ver.2")}
               className="flex w-full items-center justify-center gap-2 rounded-full py-4 font-serif text-[1.05rem] tracking-[0.02em] text-[#371d1e] transition-transform active:scale-[0.98]"
               style={{ background: "#fae100" }}
             >

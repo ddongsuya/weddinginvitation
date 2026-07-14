@@ -69,7 +69,10 @@ export function loadKakaoSdk(): Promise<KakaoShareApi> {
 // the multi-page invite (default), "/onepage" for the single-scroll one.
 // The card image is passed to Kakao directly, so the thumbnail shows
 // regardless of any per-URL OG-scrape cache.
-export async function shareInvitation(path: string = "/"): Promise<void> {
+export async function shareInvitation(
+  path: string = "/",
+  titleSuffix: string = ""
+): Promise<void> {
   try {
     const kakao = await loadKakaoSdk();
     const siteUrl = resolveSiteUrl();
@@ -97,7 +100,7 @@ export async function shareInvitation(path: string = "/"): Promise<void> {
     kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${weddingData.groom.name}♥${weddingData.bride.name}`,
+        title: `${weddingData.groom.name}♥${weddingData.bride.name}${titleSuffix}`,
         description: dateLine,
         imageUrl,
         // Match the file: 1200×630 landscape, the dimensions Kakao
