@@ -126,15 +126,23 @@ export function NaverMap({
   className,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  // Lazy initial — if this tab already saw an auth failure, start in the
-  // OSM-fallback state on first render so we never inject the Naver
-  // script again.
-  const [authFailed, setAuthFailed] = useState(readAuthFailFlag);
+  // HYDRATION-SAFE: start false (matching the server, which always renders
+  // the Naver <div>), then adopt the session's remembered auth failure in
+  // an effect after mount. Reading sessionStorage in the lazy initializer
+  // made the FIRST client render diverge from the prerendered HTML
+  // (Naver div vs OSM iframe) whenever the flag was set, which threw
+  // React #418/#423 and forced a full client re-render of the page.
+  const [authFailed, setAuthFailed] = useState(false);
   const clientId = process.env.NEXT_PUBLIC_NCP_CLIENT_ID;
 
   useEffect(() => {
+    if (readAuthFailFlag()) setAuthFailed(true);
+  }, []);
+
+  useEffect(() => {
     if (!clientId) return;
-    if (authFailed) return; // Already known bad — skip SDK entirely.
+    // Already known bad (state or freshly-read flag) — skip SDK entirely.
+    if (authFailed || readAuthFailFlag()) return;
     const SCRIPT_ID = "naver-maps-sdk";
     let cancelled = false;
     let pollId: number | undefined;
