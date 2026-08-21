@@ -350,7 +350,13 @@ export default function OnePage() {
               { label: "초", value: cd.seconds },
             ].map((u) => (
               <div key={u.label}>
-                <div className="font-hand text-[clamp(2.25rem,10vw,3rem)] font-medium leading-none text-foreground tabular-nums">
+                {/* 시계 텍스트 — 프리렌더(빌드 시각) HTML과 클라이언트가
+                    의도적으로 달라질 수 있어 hydration 비교에서 제외.
+                    (느린 로딩/인앱 웹뷰에서 React #418/#423 방지) */}
+                <div
+                  suppressHydrationWarning
+                  className="font-hand text-[clamp(2.25rem,10vw,3rem)] font-medium leading-none text-foreground tabular-nums"
+                >
                   {pad(u.value)}
                 </div>
                 <div className="mt-2 font-serif text-[0.95rem] tracking-[0.08em] text-muted">
@@ -364,7 +370,11 @@ export default function OnePage() {
               {groom.name} ♥ {bride.name}
             </span>
             의 결혼식이{" "}
-            <span className="font-medium" style={{ color: INK_ACCENT }}>
+            <span
+              suppressHydrationWarning
+              className="font-medium"
+              style={{ color: INK_ACCENT }}
+            >
               {cd.days}일
             </span>{" "}
             남았습니다
